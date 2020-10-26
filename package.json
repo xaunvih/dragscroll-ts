@@ -1,0 +1,8 @@
+{
+  "name": "dragscroll",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:xaunvih/dragscroll.git",
+  "author": "vinhmai <vinhmai079@gmail.com>",
+  "license": "MIT"
+}
