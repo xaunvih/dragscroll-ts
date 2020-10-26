@@ -1,8 +1,37 @@
 {
-  "name": "dragscroll",
-  "version": "1.0.0",
-  "main": "src/index.js",
-  "repository": "git@github.com:xaunvih/dragscroll.git",
-  "author": "vinhmai <vinhmai079@gmail.com>",
-  "license": "MIT"
+    "name": "dragscroll",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "webpack-dev-server --config webpack.dev.js",
+        "build": "webpack --config webpack.prod.js"
+    },
+    "repository": "git@github.com:xaunvih/dragscroll.git",
+    "author": "vinhmai <vinhmai079@gmail.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.10.4",
+        "@babel/preset-env": "^7.10.4",
+        "ts-loader": "^8.0.7",
+        "typescript": "^4.0.3",
+        "webpack": "^4.43.0",
+        "style-loader": "^1.2.1",
+        "sass": "^1.26.9",
+        "sass-loader": "^8.0.2",
+        "postcss-loader": "^3.0.0",
+        "autoprefixer": "^9.8.4",
+        "path": "^0.12.7",
+        "html-webpack-plugin": "^4.3.0",
+        "mini-css-extract-plugin": "^0.9.0",
+        "css-loader": "^3.6.0",
+        "clean-webpack-plugin": "^3.0.0",
+        "copy-webpack-plugin": "^6.0.3",
+        "webpack-cli": "^3.3.12",
+        "webpack-dev-server": "^3.11.0",
+        "webpack-merge": "^4.2.2"
+    },
+    "browserslist": [
+        "cover 98%",
+        "not dead"
+    ]
 }
