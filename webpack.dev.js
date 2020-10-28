@@ -12,7 +12,7 @@ module.exports = merge(webpackCommon, {
         watchContentBase: true,
         open: true,
         compress: true,
-        writeToDisk: true,
+        writeToDisk: false,
         watchOptions: {
             poll: true,
         },

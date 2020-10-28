@@ -3,9 +3,11 @@
         "outDir": "./build/",
         "noImplicitAny": false,
         "sourceMap": true,
-        "module": "es6",
+        "module": "es2015",
         "target": "es5",
-        "allowJs": true,
-        "moduleResolution": "node"
-    }
+        "allowJs": false,
+        "moduleResolution": "node",
+        "esModuleInterop": false
+    },
+    "include": ["./src/**/*.ts"]
 }
