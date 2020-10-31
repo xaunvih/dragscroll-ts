@@ -60,7 +60,7 @@ class DragScroll {
         this.$container.classList.add('drag-scroll')
         this.$wrapper = this.createEleFromHTML('<div class="drag-scroll-wrapper"></div>')
 
-        Array.from(this.$container.children).forEach(($child) => {
+        Array.from(this.$container.children).forEach(($child: Node) => {
             this.$container.removeChild($child)
             this.$wrapper.appendChild($child)
         })
