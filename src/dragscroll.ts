@@ -148,16 +148,16 @@ class DragScroll {
     }
 
     getValueInRange() {
-        let move = this.state.previous + this.state.distance
-        if (move >= 0) {
-            move = 0
+        let valueInRange = this.state.previous + this.state.distance
+        if (valueInRange >= 0) {
+            valueInRange = 0
         }
 
-        if (move <= -this.state.limit) {
-            move = -this.state.limit
+        if (valueInRange <= -this.state.limit) {
+            valueInRange = -this.state.limit
         }
 
-        return move
+        return valueInRange
     }
 
     animate() {
