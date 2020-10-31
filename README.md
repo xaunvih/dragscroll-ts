@@ -19,7 +19,7 @@ yarn add @springjs/dragscroll
 The most simple setup with default settings:
 
 ```js es2015
-import ScrollBooster from 'scrollbooster'
+import DragScroll from '@springjs/dragscroll'
 
 const $container = document.getElementById('demo-wrapper')
 new DragScroll({
