@@ -31,4 +31,4 @@ new DragScroll({
 
 ### License
 
-Copyright (c) 2020 XuanVinh
+MIT License (c) 2020 XuanVinh
