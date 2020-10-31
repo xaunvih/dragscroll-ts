@@ -1,8 +1,7 @@
 {
     "name": "@springjs/dragscroll",
     "version": "1.0.0",
-    "main": "./dist/dragscroll.cjs.js",
-    "module": "./dist/dragscroll.esm.js",
+    "main": "./build/dragscroll.min.js",
     "types": "declaration/index.d.ts",
     "scripts": {
         "start": "webpack-dev-server --config webpack.dev.js",
