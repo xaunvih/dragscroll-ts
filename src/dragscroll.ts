@@ -1,5 +1,4 @@
 import './polyfill'
-import './dragscroll.scss'
 import { DragScrollOptions, DragScrollState } from './types'
 
 class DragScroll {
