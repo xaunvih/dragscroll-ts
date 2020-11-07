@@ -12,6 +12,7 @@
         "build:umd": "webpack --config webpack.prod.js",
         "declaration": "tsc -p tsconfig.declaration.json",
         "build": "npm-run-all clean build:umd build:esm declaration print-sizes",
+        "examples": "webpack --config webpack.templates.js",
         "print-sizes": "print-sizes ./build"
     },
     "repository": "git@github.com:xaunvih/dragscroll.git",
