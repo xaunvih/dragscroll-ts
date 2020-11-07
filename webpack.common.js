@@ -1,6 +1,4 @@
 const path = require('path')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const autoprefixer = require('autoprefixer')
 const DEV_MODE = process.env.npm_lifecycle_event == 'start'
 
@@ -19,12 +17,6 @@ module.exports = {
         libraryExport: 'default',
         umdNamedDefine: true,
     },
-    plugins: [
-        new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'public/template.ejs'),
-        }),
-    ],
     module: {
         rules: [
             {

@@ -31,7 +31,7 @@ The most simple setup with default settings:
 
 ```js
 // with script tag
-<script type="application/javascript" src="./path/@springjs/dragscroll/build/dragscroll.min.js"></script>
+<script type="type/javascript" src="./path/@springjs/dragscroll/build/dragscroll.min.js"></script>
 ```
 
 ```js
@@ -46,8 +46,6 @@ import DragScroll from '@springjs/dragscroll'
 ```
 
 ```js
-// init instance
-
 const $container = document.getElementById('demo-wrapper')
 new DragScroll({
     $container: $container,
@@ -57,13 +55,17 @@ new DragScroll({
 ```
 
 ```js
-// with typescript
+// Typescript
 import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 ```
 
 ### Files size
 
-![Alt text](./public/size.png?raw=true 'page')
+File | size
+------ | -----------
+dragscroll.cjs.js | 6.17 KB
+dragscroll.es.js | 6.15 KB
+dragscroll.min.js (included css) | 9.39 KB
 
 ### License
 
