@@ -10,7 +10,7 @@
 
 <body>
     <main class="container">
-        <div id="drag-scroll-demo" class="vertical">
+        <div class="drag-scroll drag-scroll__vertical">
             <ul>
                 <% for (var i =1; i <=10;  i++ ) { %>
                 <li class="item">
@@ -26,9 +26,10 @@
 
     <script>
         window.addEventListener('load', () => {
-            const $container = document.getElementById('drag-scroll-demo')
+            const $container = document.querySelector('drag-scroll')
             new DragScroll({
                 $container: $container,
+                direction: DragScroll.DIRECTION.VERTICAL,
             });
         })
     </script>

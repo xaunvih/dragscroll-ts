@@ -9,8 +9,8 @@
 </head>
 
 <body>
-    <main class="dragscroll-home">
-        <div id="drag-scroll-demo">
+    <main class="container">
+        <div class="drag-scroll drag-scroll__all">
             <ul>
                 <% for (var i =1; i <=10;  i++ ) { %>
                 <li class="item">
@@ -26,9 +26,10 @@
 
     <script>
         window.addEventListener('load', () => {
-            const $container = document.getElementById('drag-scroll-demo')
+            const $container = document.querySelector('.drag-scroll')
             new DragScroll({
                 $container: $container,
+                scrollMode: DragScroll.SCROLL_MODE.NATIVE
             });
         })
     </script>
