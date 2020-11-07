@@ -2,6 +2,8 @@ export interface DragScrollOptions {
     $container: HTMLElement;
     speed?: number;
     gapSide?: number;
+    direction?: string;
+    scrollMode?: string;
 }
 export interface DragScrollState {
     start: number;

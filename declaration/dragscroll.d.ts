@@ -6,12 +6,14 @@ declare class DragScroll {
     $wrapper: HTMLDivElement;
     rafID: number;
     state: DragScrollState;
-    get MOUSE(): {
-        SCROLL: number;
-        RIGHT: number;
+    static get DIRECTION(): {
+        ALL: string;
+        HORIZONTAL: string;
+        VERTICAL: string;
     };
-    get MOUSE_EVENT_TYPE(): {
-        MOUSE_LEAVE: string;
+    static get SCROLL_MODE(): {
+        NATIVE: string;
+        TRANSFORM: string;
     };
     constructor(options: DragScrollOptions);
     initDom(): void;

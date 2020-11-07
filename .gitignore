@@ -6,7 +6,3 @@ node_modules
 
 npm-debug.log
 .vscode
-
-# build
-declaration
-build

@@ -1,20 +1,23 @@
 import commonjsPlugin from 'rollup-plugin-commonjs'
 import typescriptPlugin from 'rollup-plugin-typescript'
 import resolvePlugin from 'rollup-plugin-node-resolve'
-import copy from 'rollup-plugin-copy'
+import scss from 'rollup-plugin-scss'
+import autoprefixer from 'autoprefixer'
+import postcss from 'postcss'
 
 const plugins = [
     typescriptPlugin(),
     commonjsPlugin(),
     resolvePlugin(),
-    copy({
-        targets: [{ src: 'src/dragscroll.scss', dest: 'build' }],
+    scss({
+        output: 'build/dragscroll.css',
+        processor: () => postcss([autoprefixer()]),
     }),
 ]
 
 export default [
     {
-        input: 'src/index.es.ts',
+        input: 'src/index.ts',
         output: {
             format: 'es',
             exports: 'named',
@@ -23,7 +26,7 @@ export default [
         plugins,
     },
     {
-        input: 'src/index.es.ts',
+        input: 'src/index.ts',
         output: {
             format: 'cjs',
             exports: 'default',
