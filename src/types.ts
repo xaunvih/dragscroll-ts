@@ -6,15 +6,20 @@ export interface DragScrollOptions {
     scrollMode?: string
 }
 
+interface Corrdinate {
+    x: number
+    y: number
+}
+
 export interface DragScrollState {
-    start: number
-    previous: number
-    distance: number
-    limit: number
+    start: Corrdinate
+    previous: Corrdinate
+    distance: Corrdinate
+    limit: Corrdinate
+    move: Corrdinate
     isDown: boolean
     isDragging: boolean
     isRunning: boolean
-    move: number
     mouse: {
         clickEnabled: boolean
         isMoving: boolean

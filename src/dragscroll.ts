@@ -6,15 +6,31 @@ class DragScroll {
     $container: HTMLElement
     $wrapper: HTMLDivElement
     rafID: number
+
     state: DragScrollState = {
-        start: 0,
-        previous: 0,
-        distance: 0,
-        limit: 0,
+        start: {
+            x: 0,
+            y: 0,
+        },
+        previous: {
+            x: 0,
+            y: 0,
+        },
+        distance: {
+            x: 0,
+            y: 0,
+        },
+        limit: {
+            x: 0,
+            y: 0,
+        },
+        move: {
+            x: 0,
+            y: 0,
+        },
         isDown: false,
         isDragging: false,
         isRunning: false,
-        move: 0,
         mouse: {
             clickEnabled: false,
             isMoving: false,
@@ -50,7 +66,7 @@ class DragScroll {
         this.options = Object.assign(
             {
                 speed: 1.5,
-                gapSide: 30,
+                gapSide: 0,
                 direction: DragScroll.DIRECTION.ALL,
                 scrollMode: DragScroll.SCROLL_MODE.TRANSFORM,
             },
@@ -68,7 +84,7 @@ class DragScroll {
         this.bindEvents()
     }
 
-    initDom() {
+    initDom(): void {
         this.$container.classList.add('drag-scroll')
         this.$wrapper = this.createEleFromHTML('<div class="drag-scroll-wrapper"></div>')
 
@@ -77,15 +93,28 @@ class DragScroll {
             this.$wrapper.appendChild($child)
         })
 
-        this.$wrapper.style.paddingLeft = this.options.gapSide + 'px'
+        // set gap space on left & right
+        if (this.options.scrollMode === DragScroll.DIRECTION.HORIZONTAL) {
+            this.$wrapper.style.paddingLeft = this.options.gapSide + 'px'
+        }
+
+        if (this.options.scrollMode === DragScroll.SCROLL_MODE.NATIVE) {
+            this.$container.classList.add('scroll-native')
+        }
+
         this.$container.appendChild(this.$wrapper)
     }
 
     setLimit() {
-        let widthTotal: number = this.options.gapSide + this.$wrapper.offsetWidth
-        widthTotal = this.$container.offsetWidth > widthTotal ? this.$container.offsetWidth : widthTotal
+        let widthTotal = this.options.gapSide + this.$wrapper.offsetWidth
+        let heightTotal = this.$wrapper.offsetHeight
+        widthTotal = this.$container.offsetWidth > widthTotal ? 0 : widthTotal - this.$container.offsetWidth
+        heightTotal = this.$container.offsetHeight > heightTotal ? 0 : heightTotal - this.$container.offsetHeight
 
-        this.state.limit = widthTotal - this.$container.offsetWidth
+        this.state.limit = {
+            x: widthTotal,
+            y: heightTotal,
+        }
     }
 
     bindEvents() {
@@ -94,9 +123,12 @@ class DragScroll {
         this.$wrapper.addEventListener('mousemove', this.onDraging)
         this.$wrapper.addEventListener('mouseup', this.onDragEnd)
         this.$wrapper.addEventListener('mouseleave', this.onDragEnd)
-        this.$wrapper.addEventListener('touchstart', this.onDragStart)
-        this.$wrapper.addEventListener('touchmove', this.onDraging)
-        this.$wrapper.addEventListener('touchend', this.onDragEnd)
+
+        if (this.options.scrollMode === DragScroll.SCROLL_MODE.TRANSFORM) {
+            this.$wrapper.addEventListener('touchstart', this.onDragStart)
+            this.$wrapper.addEventListener('touchmove', this.onDraging)
+            this.$wrapper.addEventListener('touchend', this.onDragEnd)
+        }
     }
 
     onClick(evt: MouseEvent) {
@@ -123,7 +155,11 @@ class DragScroll {
         mouseState.movingTimeoutId = null
 
         this.state.isDown = true
-        this.state.start = evt.clientX
+        this.state.start = {
+            x: evt.clientX,
+            y: evt.clientY,
+        }
+
         this.state.previous = this.getValueInRange()
     }
 
@@ -140,9 +176,7 @@ class DragScroll {
 
     onDraging(event: MouseEvent | TouchEvent) {
         if (!this.state.isDown) return
-
         const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
-        const clientX = evt.clientX
 
         if (!this.state.mouse.movingTimeoutId) {
             this.state.mouse.movingTimeoutId = setTimeout(() => {
@@ -150,26 +184,56 @@ class DragScroll {
             }, 70)
         }
 
-        this.state.distance = (clientX - this.state.start) * this.options.speed
+        const { start } = this.state
+        const { speed } = this.options
+
+        this.state.distance = {
+            x: (evt.clientX - start.x) * speed,
+            y: (evt.clientY - start.y) * speed,
+        }
+
         this.state.move = this.getValueInRange()
         this.startAnimationLoop()
     }
 
     adaptContentPosition() {
-        this.$wrapper.style.transform = `translate3d(${this.state.move}px, 0, 0)`
+        const { x: moveX, y: moveY } = this.state.move
+
+        if (this.options.scrollMode === DragScroll.SCROLL_MODE.TRANSFORM) {
+            this.$wrapper.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`
+        }
+
+        if (this.options.scrollMode === DragScroll.SCROLL_MODE.NATIVE) {
+            this.$container.scrollLeft = Math.abs(moveX)
+            this.$container.scrollTop = Math.abs(moveY)
+        }
     }
 
     getValueInRange() {
-        let valueInRange = this.state.previous + this.state.distance
-        if (valueInRange >= 0) {
-            valueInRange = 0
+        const { previous, distance, limit } = this.state
+        let valueInRangeX = previous.x + distance.x
+        let valueInRangeY = previous.y + distance.y
+
+        if (valueInRangeX >= 0) {
+            valueInRangeX = 0
         }
 
-        if (valueInRange <= -this.state.limit) {
-            valueInRange = -this.state.limit
+        if (valueInRangeX <= -limit.x) {
+            valueInRangeX = -limit.x
         }
 
-        return valueInRange
+        if (valueInRangeY >= 0) {
+            valueInRangeY = 0
+        }
+
+        if (valueInRangeY <= -limit.y) {
+            valueInRangeY = -limit.y
+        }
+
+        return {
+            x: valueInRangeX,
+            y: valueInRangeY,
+        }
     }
 
     animate() {

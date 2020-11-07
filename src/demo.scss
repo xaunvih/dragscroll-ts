@@ -1,0 +1,62 @@
+.container {
+    margin: 100px auto;
+
+    .drag-scroll {
+        border: 1px solid #aaa;
+
+        ul {
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+
+            li {
+                width: 200px;
+                height: 200px;
+                background-color: gray;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+
+        &.drag-scroll__vertical {
+            display: block;
+        }
+
+        &.drag-scroll__horizontal {
+            ul {
+                display: flex;
+
+                li {
+                    flex-shrink: 0;
+
+                    &:not(:last-child) {
+                        margin-right: 20px;
+                    }
+                }
+            }
+        }
+
+        &.drag-scroll__all {
+            height: 400px;
+            width: 250px;
+
+            ul {
+                display: flex;
+                flex-direction: column;
+
+                li {
+                    &:not(:last-child) {
+                        margin-bottom: 20px;
+                    }
+                }
+            }
+
+            .drag-scroll-wrapper {
+                margin: 0 auto;
+            }
+        }
+    }
+}

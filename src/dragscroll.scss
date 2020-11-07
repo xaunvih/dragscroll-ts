@@ -2,6 +2,10 @@
     overflow: hidden;
     display: flex;
 
+    &.scroll-native {
+        overflow: auto;
+    }
+
     .drag-scroll-wrapper {
         display: flex;
         perspective: 1000;
