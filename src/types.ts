@@ -6,7 +6,7 @@ export interface DragScrollOptions {
     scrollMode?: string
 }
 
-interface Corrdinate {
+export interface Corrdinate {
     x: number
     y: number
 }

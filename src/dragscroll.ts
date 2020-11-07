@@ -1,5 +1,5 @@
 import './polyfill'
-import { DragScrollOptions, DragScrollState, ObjectType } from './types'
+import { DragScrollOptions, DragScrollState, ObjectType, Corrdinate } from './types'
 
 class DragScroll {
     options: DragScrollOptions
@@ -131,13 +131,13 @@ class DragScroll {
         }
     }
 
-    onClick(evt: MouseEvent) {
+    onClick(evt: MouseEvent): void {
         if (this.state.mouse.clickEnabled) return
         evt.preventDefault()
         evt.stopPropagation()
     }
 
-    onDragStart(event: MouseEvent | TouchEvent) {
+    onDragStart(event: MouseEvent | TouchEvent): void {
         const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
 
         if (evt instanceof MouseEvent) {
@@ -174,7 +174,7 @@ class DragScroll {
         this.state.mouse.isMoving = false
     }
 
-    onDraging(event: MouseEvent | TouchEvent) {
+    onDraging(event: MouseEvent | TouchEvent): void {
         if (!this.state.isDown) return
         const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
 
@@ -209,7 +209,7 @@ class DragScroll {
         }
     }
 
-    getValueInRange() {
+    getValueInRange(): Corrdinate {
         const { previous, distance, limit } = this.state
         let valueInRangeX = previous.x + distance.x
         let valueInRangeY = previous.y + distance.y
@@ -236,7 +236,7 @@ class DragScroll {
         }
     }
 
-    animate() {
+    animate(): void {
         if (!this.state.isRunning) return
         if (!this.state.mouse.isMoving) {
             this.state.isRunning = false
