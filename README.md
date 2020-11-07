@@ -14,16 +14,24 @@ npm i @springjs/dragscroll
 yarn add @springjs/dragscroll
 ```
 
+### Dedault config
+
+```js
+{
+    speed: 1.5,
+    gapSide: 30,
+    direction: 'ALL',
+    scrollMode: 'TRANSFORM',
+}
+```
+
 ### Usage
 
 The most simple setup with default settings:
 
 ```js
 // with script tag
-<script 
-    type="application/javascript" 
-    src="./path/@springjs/dragscroll/build/dragscroll.min.js">
-</script>
+<script type="application/javascript" src="./path/@springjs/dragscroll/build/dragscroll.min.js"></script>
 ```
 
 ```js

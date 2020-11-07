@@ -1,11 +1,12 @@
 import './polyfill'
 import { DragScrollOptions, DragScrollState } from './types'
+import { MOUSE_TYPE, MOUSE_EVENT_NAME, DIRECTION, SCROLL_MODE } from './constants'
 
 class DragScroll {
     options: DragScrollOptions
     $container: HTMLElement
-    $wrapper: HTMLDivElement = null
-    rafID: number = null
+    $wrapper: HTMLDivElement
+    rafID: number
     state: DragScrollState = {
         start: 0,
         previous: 0,
@@ -22,17 +23,12 @@ class DragScroll {
         },
     }
 
-    get MOUSE() {
-        return {
-            SCROLL: 1,
-            RIGHT: 2,
-        }
+    static get DIRECTION() {
+        return DIRECTION
     }
 
-    get MOUSE_EVENT_TYPE() {
-        return {
-            MOUSE_LEAVE: 'mouseleave',
-        }
+    static get SCROLL_MODE() {
+        return SCROLL_MODE
     }
 
     constructor(options: DragScrollOptions) {
@@ -40,6 +36,8 @@ class DragScroll {
             {
                 speed: 1.5,
                 gapSide: 30,
+                direction: DIRECTION.ALL,
+                scrollMode: SCROLL_MODE.TRANSFORM,
             },
             options,
         )
@@ -96,7 +94,7 @@ class DragScroll {
         const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
 
         if (evt instanceof MouseEvent) {
-            if (evt.button === this.MOUSE.RIGHT || evt.button === this.MOUSE.SCROLL) {
+            if (evt.button === MOUSE_TYPE.RIGHT || evt.button === MOUSE_TYPE.SCROLL) {
                 return
             }
 
@@ -117,7 +115,7 @@ class DragScroll {
     onDragEnd(evt: MouseEvent | TouchEvent) {
         this.state.isDown = false
 
-        if (evt.type === this.MOUSE_EVENT_TYPE.MOUSE_LEAVE) return
+        if (evt.type === MOUSE_EVENT_NAME.MOUSE_LEAVE) return
         if (!this.state.mouse.isMoving) {
             this.state.mouse.clickEnabled = true
         }
@@ -177,7 +175,7 @@ class DragScroll {
     }
 
     createEleFromHTML(html: string) {
-        let $el: HTMLDivElement = document.createElement('div')
+        let $el = document.createElement('div')
         $el.innerHTML = html
         return <HTMLDivElement>$el.firstChild
     }
