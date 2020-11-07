@@ -1,4 +1,4 @@
-#  👍🍀🍀🍀 DragScroll
+#  🍀 DragScroll 🍀🍀
 
 A drag to scroll micro library. Supports smooth content scroll via mouse/touch dragging without dependencies.
 
