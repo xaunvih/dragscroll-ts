@@ -1,6 +1,5 @@
 import './polyfill'
-import { DragScrollOptions, DragScrollState } from './types'
-import { MOUSE_TYPE, MOUSE_EVENT_NAME, DIRECTION, SCROLL_MODE } from './constants'
+import { DragScrollOptions, DragScrollState, ObjectType } from './types'
 
 class DragScroll {
     options: DragScrollOptions
@@ -23,12 +22,28 @@ class DragScroll {
         },
     }
 
-    static get DIRECTION() {
-        return DIRECTION
+    MOUSE_TYPE: ObjectType = {
+        SCROLL: 1,
+        RIGHT: 2,
     }
 
-    static get SCROLL_MODE() {
-        return SCROLL_MODE
+    MOUSE_EVENT_NAME: ObjectType = {
+        MOUSE_LEAVE: 'mouseleave',
+    }
+
+    static get DIRECTION(): ObjectType {
+        return {
+            ALL: 'ALL',
+            HORIZONTAL: 'HORIZONTAL',
+            VERTICAL: 'VERTICAL',
+        }
+    }
+
+    static get SCROLL_MODE(): ObjectType {
+        return {
+            NATIVE: 'NATIVE',
+            TRANSFORM: 'TRANSFORM',
+        }
     }
 
     constructor(options: DragScrollOptions) {
@@ -36,8 +51,8 @@ class DragScroll {
             {
                 speed: 1.5,
                 gapSide: 30,
-                direction: DIRECTION.ALL,
-                scrollMode: SCROLL_MODE.TRANSFORM,
+                direction: DragScroll.DIRECTION.ALL,
+                scrollMode: DragScroll.SCROLL_MODE.TRANSFORM,
             },
             options,
         )
@@ -94,7 +109,7 @@ class DragScroll {
         const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
 
         if (evt instanceof MouseEvent) {
-            if (evt.button === MOUSE_TYPE.RIGHT || evt.button === MOUSE_TYPE.SCROLL) {
+            if (evt.button === this.MOUSE_TYPE.RIGHT || evt.button === this.MOUSE_TYPE.SCROLL) {
                 return
             }
 
@@ -115,7 +130,7 @@ class DragScroll {
     onDragEnd(evt: MouseEvent | TouchEvent) {
         this.state.isDown = false
 
-        if (evt.type === MOUSE_EVENT_NAME.MOUSE_LEAVE) return
+        if (evt.type === this.MOUSE_EVENT_NAME.MOUSE_LEAVE) return
         if (!this.state.mouse.isMoving) {
             this.state.mouse.clickEnabled = true
         }

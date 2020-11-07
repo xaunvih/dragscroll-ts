@@ -20,3 +20,6 @@ export interface DragScrollState {
         movingTimeoutId: ReturnType<typeof setTimeout>;
     };
 }
+export interface ObjectType {
+    [key: string]: number | string;
+}

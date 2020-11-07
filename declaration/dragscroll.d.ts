@@ -1,20 +1,15 @@
 import './polyfill';
-import { DragScrollOptions, DragScrollState } from './types';
+import { DragScrollOptions, DragScrollState, ObjectType } from './types';
 declare class DragScroll {
     options: DragScrollOptions;
     $container: HTMLElement;
     $wrapper: HTMLDivElement;
     rafID: number;
     state: DragScrollState;
-    static get DIRECTION(): {
-        ALL: string;
-        HORIZONTAL: string;
-        VERTICAL: string;
-    };
-    static get SCROLL_MODE(): {
-        NATIVE: string;
-        TRANSFORM: string;
-    };
+    MOUSE_TYPE: ObjectType;
+    MOUSE_EVENT_NAME: ObjectType;
+    static get DIRECTION(): ObjectType;
+    static get SCROLL_MODE(): ObjectType;
     constructor(options: DragScrollOptions);
     initDom(): void;
     setLimit(): void;

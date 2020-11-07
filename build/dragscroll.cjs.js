@@ -7,24 +7,6 @@ window.requestAnimationFrame =
             return window.setTimeout(callback, 16);
         };
 
-var MOUSE_TYPE = {
-    LEFT: 0,
-    SCROLL: 1,
-    RIGHT: 2,
-};
-var MOUSE_EVENT_NAME = {
-    MOUSE_LEAVE: 'mouseleave',
-};
-var DIRECTION = {
-    ALL: 'ALL',
-    HORIZONTAL: 'HORIZONTAL',
-    VERTICAL: 'VERTICAL',
-};
-var SCROLL_MODE = {
-    NATIVE: 'NATIVE',
-    TRANSFORM: 'TRANSFORM',
-};
-
 var DragScroll = /** @class */ (function () {
     function DragScroll(options) {
         this.state = {
@@ -42,11 +24,18 @@ var DragScroll = /** @class */ (function () {
                 movingTimeoutId: null,
             },
         };
+        this.MOUSE_TYPE = {
+            SCROLL: 1,
+            RIGHT: 2,
+        };
+        this.MOUSE_EVENT_NAME = {
+            MOUSE_LEAVE: 'mouseleave',
+        };
         this.options = Object.assign({
             speed: 1.5,
             gapSide: 30,
-            direction: DIRECTION.ALL,
-            scrollMode: SCROLL_MODE.TRANSFORM,
+            direction: DragScroll.DIRECTION.ALL,
+            scrollMode: DragScroll.SCROLL_MODE.TRANSFORM,
         }, options);
         this.$container = this.options.$container;
         this.onClick = this.onClick.bind(this);
@@ -59,14 +48,21 @@ var DragScroll = /** @class */ (function () {
     }
     Object.defineProperty(DragScroll, "DIRECTION", {
         get: function () {
-            return DIRECTION;
+            return {
+                ALL: 'ALL',
+                HORIZONTAL: 'HORIZONTAL',
+                VERTICAL: 'VERTICAL',
+            };
         },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(DragScroll, "SCROLL_MODE", {
         get: function () {
-            return SCROLL_MODE;
+            return {
+                NATIVE: 'NATIVE',
+                TRANSFORM: 'TRANSFORM',
+            };
         },
         enumerable: false,
         configurable: true
@@ -106,7 +102,7 @@ var DragScroll = /** @class */ (function () {
     DragScroll.prototype.onDragStart = function (event) {
         var evt = event instanceof TouchEvent ? event.touches[0] : event;
         if (evt instanceof MouseEvent) {
-            if (evt.button === MOUSE_TYPE.RIGHT || evt.button === MOUSE_TYPE.SCROLL) {
+            if (evt.button === this.MOUSE_TYPE.RIGHT || evt.button === this.MOUSE_TYPE.SCROLL) {
                 return;
             }
             evt.preventDefault();
@@ -122,7 +118,7 @@ var DragScroll = /** @class */ (function () {
     };
     DragScroll.prototype.onDragEnd = function (evt) {
         this.state.isDown = false;
-        if (evt.type === MOUSE_EVENT_NAME.MOUSE_LEAVE)
+        if (evt.type === this.MOUSE_EVENT_NAME.MOUSE_LEAVE)
             return;
         if (!this.state.mouse.isMoving) {
             this.state.mouse.clickEnabled = true;

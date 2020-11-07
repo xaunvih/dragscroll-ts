@@ -24,7 +24,7 @@ module.exports = merge(webpackCommon, {
     devServer: {
         inline: true,
         hot: true,
-        contentBase: [path.resolve('build')],
+        contentBase: [path.resolve('build'), path.resolve('public')],
         open: true,
         compress: true,
         writeToDisk: true,
