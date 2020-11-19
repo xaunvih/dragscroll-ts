@@ -67,7 +67,7 @@ class DragScroll {
             {
                 speed: 1.5,
                 gapSide: 0,
-                direction: DragScroll.DIRECTION.ALL,
+                direction: DragScroll.DIRECTION.HORIZONTAL,
                 scrollMode: DragScroll.SCROLL_MODE.TRANSFORM,
             },
             options,
@@ -75,6 +75,7 @@ class DragScroll {
 
         this.$container = this.options.$container
         this.onClick = this.onClick.bind(this)
+        this.onScroll = this.onScroll.bind(this)
         this.onDragStart = this.onDragStart.bind(this)
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
@@ -94,7 +95,7 @@ class DragScroll {
         })
 
         // set gap space on left & right
-        if (this.options.scrollMode === DragScroll.DIRECTION.HORIZONTAL) {
+        if (this.options.direction === DragScroll.DIRECTION.HORIZONTAL) {
             this.$wrapper.style.paddingLeft = this.options.gapSide + 'px'
         }
 
@@ -102,10 +103,11 @@ class DragScroll {
             this.$container.classList.add('scroll-native')
         }
 
+        // scrollWidth
         this.$container.appendChild(this.$wrapper)
     }
 
-    setLimit() {
+    setLimit(): void {
         let widthTotal = this.options.gapSide + this.$wrapper.offsetWidth
         let heightTotal = this.$wrapper.offsetHeight
         widthTotal = this.$container.offsetWidth > widthTotal ? 0 : widthTotal - this.$container.offsetWidth
@@ -117,17 +119,20 @@ class DragScroll {
         }
     }
 
-    bindEvents() {
+    bindEvents(): void {
         this.$wrapper.addEventListener('click', this.onClick, true)
         this.$wrapper.addEventListener('mousedown', this.onDragStart, true)
         this.$wrapper.addEventListener('mousemove', this.onDraging)
         this.$wrapper.addEventListener('mouseup', this.onDragEnd)
         this.$wrapper.addEventListener('mouseleave', this.onDragEnd)
 
-        if (this.options.scrollMode === DragScroll.SCROLL_MODE.TRANSFORM) {
-            this.$wrapper.addEventListener('touchstart', this.onDragStart)
-            this.$wrapper.addEventListener('touchmove', this.onDraging)
-            this.$wrapper.addEventListener('touchend', this.onDragEnd)
+        this.$wrapper.addEventListener('touchstart', this.onDragStart)
+        this.$wrapper.addEventListener('touchmove', this.onDraging)
+        this.$wrapper.addEventListener('touchend', this.onDragEnd)
+
+        const isNativeScrollMode = this.options.scrollMode === DragScroll.SCROLL_MODE.NATIVE
+        if (isNativeScrollMode) {
+            this.$container.addEventListener('scroll', this.onScroll)
         }
     }
 
@@ -154,7 +159,7 @@ class DragScroll {
         mouseState.isMoving = false
         mouseState.movingTimeoutId = null
 
-        this.state.isDown = true
+        this.state.isDragging = true
         this.state.start = {
             x: evt.clientX,
             y: evt.clientY,
@@ -163,8 +168,8 @@ class DragScroll {
         this.state.previous = this.getValueInRange()
     }
 
-    onDragEnd(evt: MouseEvent | TouchEvent) {
-        this.state.isDown = false
+    onDragEnd(evt: MouseEvent | TouchEvent): void {
+        this.state.isDragging = false
 
         if (evt.type === this.MOUSE_EVENT_NAME.MOUSE_LEAVE) return
         if (!this.state.mouse.isMoving) {
@@ -175,7 +180,7 @@ class DragScroll {
     }
 
     onDraging(event: MouseEvent | TouchEvent): void {
-        if (!this.state.isDown) return
+        if (!this.state.isDragging) return
         const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
 
         if (!this.state.mouse.movingTimeoutId) {
@@ -196,7 +201,13 @@ class DragScroll {
         this.startAnimationLoop()
     }
 
-    adaptContentPosition() {
+    onScroll(): void {
+        if (this.state.isDragging) return
+        const { scrollLeft, scrollTop } = this.$container
+        console.log('onScroll: ', this.state.previous)
+    }
+
+    adaptContentPosition(): void {
         const { x: moveX, y: moveY } = this.state.move
 
         if (this.options.scrollMode === DragScroll.SCROLL_MODE.TRANSFORM) {
@@ -236,24 +247,24 @@ class DragScroll {
         }
     }
 
-    animate(): void {
+    doAnimate(): void {
         if (!this.state.isRunning) return
         if (!this.state.mouse.isMoving) {
             this.state.isRunning = false
         }
 
         this.adaptContentPosition()
-        this.rafID = window.requestAnimationFrame(() => this.animate())
+        this.rafID = window.requestAnimationFrame(() => this.doAnimate())
     }
 
-    startAnimationLoop() {
+    startAnimationLoop(): void {
         this.state.isRunning = true
 
         window.cancelAnimationFrame(this.rafID)
-        this.rafID = window.requestAnimationFrame(() => this.animate())
+        this.rafID = window.requestAnimationFrame(() => this.doAnimate())
     }
 
-    createEleFromHTML(html: string) {
+    createEleFromHTML(html: string): HTMLDivElement {
         let $el = document.createElement('div')
         $el.innerHTML = html
         return <HTMLDivElement>$el.firstChild

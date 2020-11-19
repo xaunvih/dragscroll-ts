@@ -3,6 +3,7 @@
 
     .drag-scroll {
         border: 1px solid #aaa;
+        margin: 0 auto;
 
         ul {
             padding: 0;
@@ -12,6 +13,7 @@
             li {
                 width: 200px;
                 height: 200px;
+                flex-shrink: 0;
                 background-color: gray;
 
                 img {
@@ -40,8 +42,8 @@
         }
 
         &.drag-scroll__all {
-            height: 400px;
-            width: 250px;
+            height: 70vh;
+            width: 400px;
 
             ul {
                 display: flex;
@@ -56,6 +58,10 @@
 
             .drag-scroll-wrapper {
                 margin: 0 auto;
+
+                .content {
+                    display: flex;
+                }
             }
         }
     }
