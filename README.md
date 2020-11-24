@@ -1,6 +1,6 @@
 #  🍀 DragScroll 🍀🍀
 
-A drag to scroll micro library. Supports smooth content scroll via mouse/touch dragging without dependencies.
+A drag to scroll library. Supports smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
 ### Installation
 
