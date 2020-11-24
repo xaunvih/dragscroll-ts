@@ -62,7 +62,7 @@ import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 ### Config options
 
 Option | Type | Description
------- | -----------
+------ | ----------- | --------------------------------------------
 inputsFocus | boolean | Allow input fields to be focused
 gapSide | number | White space in both side of list. It's only effect with horizontal scroll mode. Default is 30px
 speed | number | The speed when dragging. Default is 2
