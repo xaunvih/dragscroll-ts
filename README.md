@@ -59,6 +59,22 @@ new DragScroll({
 import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 ```
 
+### Config options
+
+Option | Description
+------ | -----------
+inputsFocus | (Boolean) Allow input fields to be focused
+gapSide | (Number) White space in both side of list. It's only effect with horizontal scroll mode. Default is 30px
+speed | (Number) The speed when dragging. Default is 2
+onDragStart | (Callback func) func is called when users start drag content
+onDragging | (Callback func) func is called when users are dragging content
+onDragEnd | (Callback func) func is called when users stop dragging content
+### API
+
+Name | Description
+------ | -----------
+scrollTo() | Param is cordinate object { x, y }
+
 ### Files size
 
 File | size
