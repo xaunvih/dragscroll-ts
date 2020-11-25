@@ -1,7 +1,7 @@
-import './dragscroll.scss'
-import './demo.scss'
+import '../public/demo.scss'
+import './dragscroll.scss'  
 
 import DragScroll from './dragscroll'
 
-export * from './types'
+export * from './@types'
 export default DragScroll

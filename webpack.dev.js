@@ -4,7 +4,7 @@ const webpackCommon = require('./webpack.common')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
-const files = ['horizontal-transform', 'vertical-transform', 'all-transform', 'horizontal-native', 'vertical-native', 'all-native']
+const files = ['horizontal-native', 'vertical-native', 'all-native']
 
 module.exports = merge(webpackCommon, {
     mode: 'development',
