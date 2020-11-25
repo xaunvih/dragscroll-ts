@@ -3,7 +3,7 @@ export interface DragScrollOptions {
     speed?: number
     gapSide?: number
     direction?: string
-    scrollMode?: string
+    allowInputFocus?: boolean
 }
 
 export interface Corrdinate {

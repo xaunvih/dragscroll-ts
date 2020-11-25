@@ -6,6 +6,7 @@ class DragScroll {
     $container: HTMLElement
     $wrapper: HTMLDivElement
     rafID: number
+    valueInRange: Corrdinate
 
     state: DragScrollState = {
         start: {
@@ -43,22 +44,11 @@ class DragScroll {
         RIGHT: 2,
     }
 
-    MOUSE_EVENT_NAME: ObjectType = {
-        MOUSE_LEAVE: 'mouseleave',
-    }
-
     static get DIRECTION(): ObjectType {
         return {
             ALL: 'ALL',
             HORIZONTAL: 'HORIZONTAL',
             VERTICAL: 'VERTICAL',
-        }
-    }
-
-    static get SCROLL_MODE(): ObjectType {
-        return {
-            NATIVE: 'NATIVE',
-            TRANSFORM: 'TRANSFORM',
         }
     }
 
@@ -68,20 +58,23 @@ class DragScroll {
                 speed: 1.5,
                 gapSide: 0,
                 direction: DragScroll.DIRECTION.HORIZONTAL,
-                scrollMode: DragScroll.SCROLL_MODE.TRANSFORM,
+                allowInputFocus: true,
+                onDragStart: null,
+                onDragging: null,
+                onDragEnd: null,
             },
             options,
         )
 
         this.$container = this.options.$container
         this.onClick = this.onClick.bind(this)
-        this.onScroll = this.onScroll.bind(this)
         this.onDragStart = this.onDragStart.bind(this)
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
+        this.doAnimate = this.doAnimate.bind(this)
 
         this.initDom()
-        this.setLimit()
+        this.setOrUpdateLimit()
         this.bindEvents()
     }
 
@@ -95,19 +88,12 @@ class DragScroll {
         })
 
         // set gap space on left & right
-        if (this.options.direction === DragScroll.DIRECTION.HORIZONTAL) {
-            this.$wrapper.style.paddingLeft = this.options.gapSide + 'px'
-        }
-
-        if (this.options.scrollMode === DragScroll.SCROLL_MODE.NATIVE) {
-            this.$container.classList.add('scroll-native')
-        }
-
-        // scrollWidth
+        const { style } = this.$wrapper
+        style.paddingLeft = this.options.gapSide + 'px'
         this.$container.appendChild(this.$wrapper)
     }
 
-    setLimit(): void {
+    setOrUpdateLimit(): void {
         let widthTotal = this.options.gapSide + this.$wrapper.offsetWidth
         let heightTotal = this.$wrapper.offsetHeight
         widthTotal = this.$container.offsetWidth > widthTotal ? 0 : widthTotal - this.$container.offsetWidth
@@ -122,18 +108,11 @@ class DragScroll {
     bindEvents(): void {
         this.$wrapper.addEventListener('click', this.onClick, true)
         this.$wrapper.addEventListener('mousedown', this.onDragStart, true)
-        this.$wrapper.addEventListener('mousemove', this.onDraging)
-        this.$wrapper.addEventListener('mouseup', this.onDragEnd)
-        this.$wrapper.addEventListener('mouseleave', this.onDragEnd)
-
         this.$wrapper.addEventListener('touchstart', this.onDragStart)
-        this.$wrapper.addEventListener('touchmove', this.onDraging)
-        this.$wrapper.addEventListener('touchend', this.onDragEnd)
-
-        const isNativeScrollMode = this.options.scrollMode === DragScroll.SCROLL_MODE.NATIVE
-        if (isNativeScrollMode) {
-            this.$container.addEventListener('scroll', this.onScroll)
-        }
+        window.addEventListener('mousemove', this.onDraging)
+        window.addEventListener('mouseup', this.onDragEnd)
+        window.addEventListener('touchmove', this.onDraging)
+        window.addEventListener('touchend', this.onDragEnd)
     }
 
     onClick(evt: MouseEvent): void {
@@ -154,6 +133,12 @@ class DragScroll {
             evt.stopPropagation()
         }
 
+        // focus on form input elements
+        const formNodes = ['input', 'textarea', 'button', 'select', 'label']
+        if (this.options.allowInputFocus && formNodes.indexOf((<HTMLElement>evt.target).nodeName.toLowerCase()) > -1) {
+            return
+        }
+
         const { mouse: mouseState } = this.state
         mouseState.clickEnabled = false
         mouseState.isMoving = false
@@ -168,10 +153,8 @@ class DragScroll {
         this.state.previous = this.getValueInRange()
     }
 
-    onDragEnd(evt: MouseEvent | TouchEvent): void {
+    onDragEnd(): void {
         this.state.isDragging = false
-
-        if (evt.type === this.MOUSE_EVENT_NAME.MOUSE_LEAVE) return
         if (!this.state.mouse.isMoving) {
             this.state.mouse.clickEnabled = true
         }
@@ -201,29 +184,20 @@ class DragScroll {
         this.startAnimationLoop()
     }
 
-    onScroll(): void {
-        if (this.state.isDragging) return
-        const { scrollLeft, scrollTop } = this.$container
-        console.log('onScroll: ', this.state.previous)
-    }
-
     adaptContentPosition(): void {
         const { x: moveX, y: moveY } = this.state.move
-
-        if (this.options.scrollMode === DragScroll.SCROLL_MODE.TRANSFORM) {
-            this.$wrapper.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`
-        }
-
-        if (this.options.scrollMode === DragScroll.SCROLL_MODE.NATIVE) {
-            this.$container.scrollLeft = Math.abs(moveX)
-            this.$container.scrollTop = Math.abs(moveY)
-        }
+        this.$wrapper.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`
     }
 
     getValueInRange(): Corrdinate {
         const { previous, distance, limit } = this.state
         let valueInRangeX = previous.x + distance.x
         let valueInRangeY = previous.y + distance.y
+
+        this.valueInRange = {
+            x: valueInRangeX,
+            y: valueInRangeY,
+        }
 
         if (valueInRangeX >= 0) {
             valueInRangeX = 0
@@ -254,14 +228,13 @@ class DragScroll {
         }
 
         this.adaptContentPosition()
-        this.rafID = window.requestAnimationFrame(() => this.doAnimate())
+        this.rafID = window.requestAnimationFrame(this.doAnimate)
     }
 
     startAnimationLoop(): void {
         this.state.isRunning = true
-
         window.cancelAnimationFrame(this.rafID)
-        this.rafID = window.requestAnimationFrame(() => this.doAnimate())
+        this.rafID = window.requestAnimationFrame(this.doAnimate)
     }
 
     createEleFromHTML(html: string): HTMLDivElement {

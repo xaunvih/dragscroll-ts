@@ -2,10 +2,6 @@
     overflow: hidden;
     display: flex;
 
-    &.scroll-native {
-        overflow: auto;
-    }
-
     .drag-scroll-wrapper {
         display: flex;
         perspective: 1000;
@@ -13,14 +9,6 @@
         transform-style: preserve-3d;
         transform: translate3d(0, 0, 0);
         -webkit-tap-highlight-color: transparent;
-        touch-action: pan-y;
-        will-change: transform;
         cursor: pointer;
-
-        img,
-        a {
-            user-select: none;
-            -webkit-user-drag: none;
-        }
     }
 }
