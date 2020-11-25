@@ -1,4 +1,4 @@
-#  🍀 DragScroll 🍀🍀
+# 🙌😍✌️ DragScroll
 
 A drag to scroll library. Supports smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
