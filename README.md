@@ -1,6 +1,6 @@
 #  🍀 DragScroll 🍀🍀
 
-A drag to scroll micro library. Supports smooth content scroll via mouse/touch dragging without dependencies.
+A drag to scroll library. Supports smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
 ### Installation
 
@@ -58,6 +58,22 @@ new DragScroll({
 // Typescript
 import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 ```
+
+### Config options
+
+Option | Type | Description
+------ | ----------- | --------------------------------------------
+inputsFocus | boolean | Allow input fields to be focused
+gapSide | number | White space in both side of list. It's only effect with horizontal scroll mode. Default is 30px
+speed | number | The speed when dragging. Default is 2
+onDragStart | func | func is called when users start drag content
+onDragging | func | func is called when users are dragging content
+onDragEnd | func | func is called when users stop dragging content
+### API
+
+Name | Description
+------ | -----------
+scrollTo() | Param is cordinate object { x, y }
 
 ### Files size
 
