@@ -1,14 +1,11 @@
 .drag-scroll {
-    overflow: hidden;
-    display: flex;
-
-    .drag-scroll-wrapper {
-        display: flex;
-        perspective: 1000;
-        backface-visibility: hidden;
-        transform-style: preserve-3d;
-        transform: translate3d(0, 0, 0);
-        -webkit-tap-highlight-color: transparent;
-        cursor: pointer;
+    overflow: auto;
+    // IE
+    -ms-overflow-style: none;
+    // Firefox
+    scrollbar-width: none;
+    // Chrome, Edge, Safari
+    &::-webkit-scrollbar {
+        display: none;
     }
 }

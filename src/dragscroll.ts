@@ -1,12 +1,11 @@
 import './polyfill'
-import { DragScrollOptions, DragScrollState, ObjectType, Corrdinate } from './types'
+import { DragScrollOptions, DragScrollState, ObjectType, Corrdinate } from './@types'
 
 class DragScroll {
     options: DragScrollOptions
     $container: HTMLElement
-    $wrapper: HTMLDivElement
+    $content: HTMLElement
     rafID: number
-    valueInRange: Corrdinate
 
     state: DragScrollState = {
         start: {
@@ -21,14 +20,6 @@ class DragScroll {
             x: 0,
             y: 0,
         },
-        limit: {
-            x: 0,
-            y: 0,
-        },
-        move: {
-            x: 0,
-            y: 0,
-        },
         isDown: false,
         isDragging: false,
         isRunning: false,
@@ -37,11 +28,6 @@ class DragScroll {
             isMoving: false,
             movingTimeoutId: null,
         },
-    }
-
-    MOUSE_TYPE: ObjectType = {
-        SCROLL: 1,
-        RIGHT: 2,
     }
 
     static get DIRECTION(): ObjectType {
@@ -55,10 +41,8 @@ class DragScroll {
     constructor(options: DragScrollOptions) {
         this.options = Object.assign(
             {
-                speed: 1.5,
-                gapSide: 0,
-                direction: DragScroll.DIRECTION.HORIZONTAL,
                 allowInputFocus: true,
+                hideScroll: true,
                 onDragStart: null,
                 onDragging: null,
                 onDragEnd: null,
@@ -67,52 +51,27 @@ class DragScroll {
         )
 
         this.$container = this.options.$container
+        this.$content = this.options.$content
         this.onClick = this.onClick.bind(this)
         this.onDragStart = this.onDragStart.bind(this)
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
         this.doAnimate = this.doAnimate.bind(this)
-
         this.initDom()
-        this.setOrUpdateLimit()
         this.bindEvents()
     }
 
     initDom(): void {
-        this.$container.classList.add('drag-scroll')
-        this.$wrapper = this.createEleFromHTML('<div class="drag-scroll-wrapper"></div>')
-
-        Array.from(this.$container.children).forEach(($child: Node) => {
-            this.$container.removeChild($child)
-            this.$wrapper.appendChild($child)
-        })
-
-        // set gap space on left & right
-        const { style } = this.$wrapper
-        style.paddingLeft = this.options.gapSide + 'px'
-        this.$container.appendChild(this.$wrapper)
-    }
-
-    setOrUpdateLimit(): void {
-        let widthTotal = this.options.gapSide + this.$wrapper.offsetWidth
-        let heightTotal = this.$wrapper.offsetHeight
-        widthTotal = this.$container.offsetWidth > widthTotal ? 0 : widthTotal - this.$container.offsetWidth
-        heightTotal = this.$container.offsetHeight > heightTotal ? 0 : heightTotal - this.$container.offsetHeight
-
-        this.state.limit = {
-            x: widthTotal,
-            y: heightTotal,
+        if (this.options.hideScroll) {
+            this.$container.classList.add('drag-scroll')
         }
     }
 
     bindEvents(): void {
-        this.$wrapper.addEventListener('click', this.onClick, true)
-        this.$wrapper.addEventListener('mousedown', this.onDragStart, true)
-        this.$wrapper.addEventListener('touchstart', this.onDragStart)
+        this.$content.addEventListener('click', this.onClick, true)
+        this.$content.addEventListener('mousedown', this.onDragStart, true)
         window.addEventListener('mousemove', this.onDraging)
         window.addEventListener('mouseup', this.onDragEnd)
-        window.addEventListener('touchmove', this.onDraging)
-        window.addEventListener('touchend', this.onDragEnd)
     }
 
     onClick(evt: MouseEvent): void {
@@ -121,17 +80,18 @@ class DragScroll {
         evt.stopPropagation()
     }
 
-    onDragStart(event: MouseEvent | TouchEvent): void {
-        const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
-
-        if (evt instanceof MouseEvent) {
-            if (evt.button === this.MOUSE_TYPE.RIGHT || evt.button === this.MOUSE_TYPE.SCROLL) {
-                return
-            }
-
-            evt.preventDefault()
-            evt.stopPropagation()
+    onDragStart(evt: MouseEvent): void {
+        const mouseTypes: ObjectType = {
+            SCROLL: 1,
+            RIGHT: 2,
         }
+
+        if (evt.button === mouseTypes.RIGHT || evt.button === mouseTypes.SCROLL) {
+            return
+        }
+
+        evt.preventDefault()
+        evt.stopPropagation()
 
         // focus on form input elements
         const formNodes = ['input', 'textarea', 'button', 'select', 'label']
@@ -150,22 +110,14 @@ class DragScroll {
             y: evt.clientY,
         }
 
-        this.state.previous = this.getValueInRange()
-    }
-
-    onDragEnd(): void {
-        this.state.isDragging = false
-        if (!this.state.mouse.isMoving) {
-            this.state.mouse.clickEnabled = true
+        this.state.previous = {
+            x: this.$container.scrollLeft,
+            y: this.$container.scrollTop,
         }
-
-        this.state.mouse.isMoving = false
     }
 
-    onDraging(event: MouseEvent | TouchEvent): void {
+    onDraging(evt: MouseEvent): void {
         if (!this.state.isDragging) return
-        const evt: Touch | MouseEvent = event instanceof TouchEvent ? event.touches[0] : event
-
         if (!this.state.mouse.movingTimeoutId) {
             this.state.mouse.movingTimeoutId = setTimeout(() => {
                 this.state.mouse.isMoving = true
@@ -173,56 +125,34 @@ class DragScroll {
         }
 
         const { start } = this.state
-        const { speed } = this.options
-
         this.state.distance = {
-            x: (evt.clientX - start.x) * speed,
-            y: (evt.clientY - start.y) * speed,
+            x: (evt.clientX - start.x) * 2,
+            y: (evt.clientY - start.y) * 2,
         }
 
-        this.state.move = this.getValueInRange()
         this.startAnimationLoop()
     }
 
-    adaptContentPosition(): void {
-        const { x: moveX, y: moveY } = this.state.move
-        this.$wrapper.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`
+    onDragEnd(): void {
+        this.state.isDragging = false
+        const { mouse } = this.state
+        if (!mouse.isMoving) {
+            mouse.clickEnabled = true
+        }
+
+        mouse.isMoving = false
     }
 
-    getValueInRange(): Corrdinate {
-        const { previous, distance, limit } = this.state
-        let valueInRangeX = previous.x + distance.x
-        let valueInRangeY = previous.y + distance.y
-
-        this.valueInRange = {
-            x: valueInRangeX,
-            y: valueInRangeY,
-        }
-
-        if (valueInRangeX >= 0) {
-            valueInRangeX = 0
-        }
-
-        if (valueInRangeX <= -limit.x) {
-            valueInRangeX = -limit.x
-        }
-
-        if (valueInRangeY >= 0) {
-            valueInRangeY = 0
-        }
-
-        if (valueInRangeY <= -limit.y) {
-            valueInRangeY = -limit.y
-        }
-
-        return {
-            x: valueInRangeX,
-            y: valueInRangeY,
-        }
+    adaptContentPosition(): void {
+        const { x: moveX, y: moveY } = this.state.distance
+        const { x: previousX, y: previousY } = this.state.previous
+        this.$container.scrollLeft = -moveX + previousX
+        this.$container.scrollTop = -moveY + previousY
     }
 
     doAnimate(): void {
         if (!this.state.isRunning) return
+
         if (!this.state.mouse.isMoving) {
             this.state.isRunning = false
         }
@@ -235,12 +165,6 @@ class DragScroll {
         this.state.isRunning = true
         window.cancelAnimationFrame(this.rafID)
         this.rafID = window.requestAnimationFrame(this.doAnimate)
-    }
-
-    createEleFromHTML(html: string): HTMLDivElement {
-        let $el = document.createElement('div')
-        $el.innerHTML = html
-        return <HTMLDivElement>$el.firstChild
     }
 }
 
