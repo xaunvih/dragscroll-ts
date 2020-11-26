@@ -6,6 +6,6 @@ module.exports = merge(webpackDev, {
     mode: 'production',
     devtool: false,
     output: {
-        path: path.resolve('examples'),
+        path: path.resolve('docs'),
     },
 })
