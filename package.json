@@ -7,12 +7,12 @@
     "types": "declaration/index.d.ts",
     "scripts": {
         "start": "webpack-dev-server --config webpack.dev.js",
-        "clean": "rm -rf build && rm -rf declaration",
+        "clean": "rm -rf build && rm -rf declaration && rm -rf docs",
         "build:esm": "rollup -c",
         "build:umd": "webpack --config webpack.prod.js",
         "declaration": "tsc -p tsconfig.declaration.json",
-        "build": "npm-run-all clean build:umd build:esm declaration print-sizes",
-        "examples": "webpack --config webpack.templates.js",
+        "build": "npm-run-all clean build:umd build:esm docs declaration print-sizes",
+        "docs": "webpack --config webpack.templates.js",
         "print-sizes": "print-sizes ./build"
     },
     "repository": "git@github.com:xaunvih/dragscroll.git",
