@@ -61,27 +61,34 @@ import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 
 ### Config options
 
-Option | Type | Description
------- | ----------- | --------------------------------------------
-inputsFocus | boolean | Allow input fields to be focused
-gapSide | number | White space in both side of list. It's only effect with horizontal scroll mode. Default is 30px
-speed | number | The speed when dragging. Default is 2
-onDragStart | func | func is called when users start drag content
-onDragging | func | func is called when users are dragging content
-onDragEnd | func | func is called when users stop dragging content
+| Option      | Type    | Description                                                                                     |
+| ----------- | ------- | ----------------------------------------------------------------------------------------------- |
+| inputsFocus | boolean | Allow input fields to be focused                                                                |
+| gapSide     | number  | White space in both side of list. It's only effect with horizontal scroll mode. Default is 30px |
+| speed       | number  | The speed when dragging. Default is 2                                                           |
+| onDragStart | func    | func is called when users start drag content                                                    |
+| onDragging  | func    | func is called when users are dragging content                                                  |
+| onDragEnd   | func    | func is called when users stop dragging content                                                 |
+
 ### API
 
-Name | Description
------- | -----------
-scrollTo() | Param is cordinate object { x, y }
+| Name       | Description                        |
+| ---------- | ---------------------------------- |
+| scrollTo() | Param is cordinate object { x, y } |
 
 ### Files size
 
-File | size
------- | -----------
-dragscroll.cjs.js | 6.17 KB
-dragscroll.es.js | 6.15 KB
-dragscroll.min.js (included css) | 9.39 KB
+| File                             | size    |
+| -------------------------------- | ------- |
+| dragscroll.cjs.js                | 6.17 KB |
+| dragscroll.es.js                 | 6.15 KB |
+| dragscroll.min.js (included css) | 9.39 KB |
+
+### Reference
+
+-   Hide scrollwith with css:
+    -   https://developer.mozilla.org/en-US/docs/Archive/Web/CSS/-ms-overflow-style
+    -   https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar
 
 ### License
 

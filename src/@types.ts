@@ -1,7 +1,6 @@
 export interface DragScrollOptions {
     $container: HTMLElement
-    speed?: number
-    gapSide?: number
+    $content: HTMLElement
     direction?: string
     allowInputFocus?: boolean
 }
@@ -15,8 +14,6 @@ export interface DragScrollState {
     start: Corrdinate
     previous: Corrdinate
     distance: Corrdinate
-    limit: Corrdinate
-    move: Corrdinate
     isDown: boolean
     isDragging: boolean
     isRunning: boolean

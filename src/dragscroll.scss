@@ -1,10 +1,10 @@
 .drag-scroll {
+    overflow: auto;
+
     // IE
     -ms-overflow-style: none;
-    overflow: auto;
     // Firefox
     scrollbar-width: none;
-
     // Chrome, Edge, Safari
     &::-webkit-scrollbar {
         display: none;
