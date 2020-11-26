@@ -41,8 +41,8 @@ class DragScroll {
     constructor(options: DragScrollOptions) {
         this.options = Object.assign(
             {
-                direction: DragScroll.DIRECTION.HORIZONTAL,
                 allowInputFocus: true,
+                hideScroll: true,
                 onDragStart: null,
                 onDragging: null,
                 onDragEnd: null,
@@ -62,7 +62,9 @@ class DragScroll {
     }
 
     initDom(): void {
-        this.$container.classList.add('drag-scroll')
+        if (this.options.hideScroll) {
+            this.$container.classList.add('drag-scroll')
+        }
     }
 
     bindEvents(): void {
@@ -150,6 +152,7 @@ class DragScroll {
 
     doAnimate(): void {
         if (!this.state.isRunning) return
+
         if (!this.state.mouse.isMoving) {
             this.state.isRunning = false
         }

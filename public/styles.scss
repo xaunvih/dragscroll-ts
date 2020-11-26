@@ -1,11 +1,35 @@
 .container {
-    margin: 100px auto;
-    overflow: hidden;
-
     .drag-scroll {
         border: 1px solid #aaa;
         margin: 0 auto;
         display: flex;
+
+        &.drag-scroll-vertical {
+            display: inline-block;
+            height: 500px;
+            width: auto;
+
+            ul {
+                display: block;
+
+                li {
+                    margin: 0 0 20px 0;
+                }
+            }
+        }
+
+        &.drag-scroll-all {
+            height: 500px;
+            width: 700px;
+
+            .content {
+                ul {
+                    li {
+                        margin: 5px;
+                    }
+                }
+            }
+        }
 
         ul {
             padding: 0;

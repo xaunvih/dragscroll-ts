@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Vertical scroll with transform mode | DragScroll</title>
+    <title>Vertical scroll | DragScroll</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
     <main class="container">
-        <div class="drag-scroll drag-scroll__all">
+        <h1>Vertical scroll</h1>
+        <div class="drag-scroll drag-scroll-vertical">
             <ul>
                 <% for (var i =1; i <=10;  i++ ) { %>
                 <li class="item">
@@ -26,8 +28,10 @@
     <script>
         window.addEventListener('load', () => {
             const $container = document.querySelector('.drag-scroll')
-            new DragScroll({
+            const $content = $container.querySelector('ul')
+            window.dragSroll = new DragScroll({
                 $container: $container,
+                $content: $content
             });
         })
     </script>

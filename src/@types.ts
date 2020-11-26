@@ -1,8 +1,8 @@
 export interface DragScrollOptions {
     $container: HTMLElement
     $content: HTMLElement
-    direction?: string
-    allowInputFocus?: boolean
+    hideScroll: boolean
+    allowInputFocus: boolean
 }
 
 export interface Corrdinate {
