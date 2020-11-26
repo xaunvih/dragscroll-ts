@@ -14,17 +14,6 @@ npm i @springjs/dragscroll
 yarn add @springjs/dragscroll
 ```
 
-### Dedault config
-
-```js
-{
-    speed: 1.5,
-    gapSide: 30,
-    direction: 'ALL',
-    scrollMode: 'TRANSFORM',
-}
-```
-
 ### Usage
 
 The most simple setup with default settings:
@@ -61,14 +50,10 @@ import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 
 ### Config options
 
-| Option      | Type    | Description                                                                                     |
-| ----------- | ------- | ----------------------------------------------------------------------------------------------- |
-| inputsFocus | boolean | Allow input fields to be focused                                                                |
-| gapSide     | number  | White space in both side of list. It's only effect with horizontal scroll mode. Default is 30px |
-| speed       | number  | The speed when dragging. Default is 2                                                           |
-| onDragStart | func    | func is called when users start drag content                                                    |
-| onDragging  | func    | func is called when users are dragging content                                                  |
-| onDragEnd   | func    | func is called when users stop dragging content                                                 |
+| Option      | Type    | Description                        |
+| ----------- | ------- | ---------------------------------- |
+| inputsFocus | boolean | Allow input fields to be focused   |
+| hideScroll  | boolean | Default is hide browsers scrollbar |
 
 ### API
 
@@ -80,9 +65,9 @@ import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
 
 | File                             | size    |
 | -------------------------------- | ------- |
-| dragscroll.cjs.js                | 6.17 KB |
-| dragscroll.es.js                 | 6.15 KB |
-| dragscroll.min.js (included css) | 9.39 KB |
+| dragscroll.cjs.js                | 5 KB    |
+| dragscroll.es.js                 | 4.98 KB |
+| dragscroll.min.js (included css) | 7.75 KB |
 
 ### Reference
 
