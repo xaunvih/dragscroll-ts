@@ -24,6 +24,14 @@ export interface DragScrollState {
     }
 }
 
+export interface DragScrollState2 {
+    start: Corrdinate
+    previous: Corrdinate
+    distance: Corrdinate
+    isDown: boolean
+    isDragging: boolean
+}
+
 export interface ObjectType {
     [key: string]: number | string
 }

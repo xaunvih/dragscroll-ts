@@ -27,7 +27,7 @@ module.exports = merge(webpackCommon, {
         contentBase: [path.resolve('build'), path.resolve('public')],
         open: true,
         compress: true,
-        writeToDisk: true,
+        writeToDisk: false,
         watchOptions: {
             poll: true,
         },

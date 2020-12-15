@@ -1,170 +1,142 @@
 import './polyfill'
-import { DragScrollOptions, DragScrollState, ObjectType, Corrdinate } from './@types'
+import { DragScrollOptions } from './@types'
 
 class DragScroll {
-    options: DragScrollOptions
+    options: any
     $container: HTMLElement
     $content: HTMLElement
     rafID: number
-
-    state: DragScrollState = {
-        start: {
+    state: any = {
+        startPosition: {
             x: 0,
             y: 0,
         },
-        previous: {
+        previousPosition: {
             x: 0,
             y: 0,
         },
-        distance: {
+        position: {
             x: 0,
             y: 0,
         },
-        isDown: false,
+        dragPosition: {
+            x: 0,
+            y: 0,
+        },
+        velocity: {
+            x: 0,
+            y: 0,
+        },
         isDragging: false,
-        isRunning: false,
-        mouse: {
-            clickEnabled: false,
-            isMoving: false,
-            movingTimeoutId: null,
-        },
-    }
-
-    static get DIRECTION(): ObjectType {
-        return {
-            ALL: 'ALL',
-            HORIZONTAL: 'HORIZONTAL',
-            VERTICAL: 'VERTICAL',
-        }
     }
 
     constructor(options: DragScrollOptions) {
         this.options = Object.assign(
             {
-                allowInputFocus: true,
-                hideScroll: true,
-                onDragStart: null,
-                onDragging: null,
-                onDragEnd: null,
+                friction: 0.95,
             },
             options,
         )
 
         this.$container = this.options.$container
         this.$content = this.options.$content
-        this.onClick = this.onClick.bind(this)
+
         this.onDragStart = this.onDragStart.bind(this)
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
-        this.doAnimate = this.doAnimate.bind(this)
-        this.initDom()
+        this.animate = this.animate.bind(this)
         this.bindEvents()
-    }
-
-    initDom(): void {
-        if (this.options.hideScroll) {
-            this.$container.classList.add('drag-scroll')
-        }
+        this.animate()
     }
 
     bindEvents(): void {
-        this.$content.addEventListener('click', this.onClick, true)
-        this.$content.addEventListener('mousedown', this.onDragStart, true)
+        this.$content.addEventListener('mousedown', this.onDragStart)
         window.addEventListener('mousemove', this.onDraging)
         window.addEventListener('mouseup', this.onDragEnd)
     }
 
-    onClick(evt: MouseEvent): void {
-        if (this.state.mouse.clickEnabled) return
-        evt.preventDefault()
-        evt.stopPropagation()
+    update() {
+        this.applyDragForce()
+        this.applyBoundForce()
+
+        const { position, velocity } = this.state
+        const { friction } = this.options
+
+        velocity.x *= friction
+        velocity.y *= friction
+
+        position.x += velocity.x
+        position.y += velocity.y
     }
 
+    applyForce(force: any) {
+        const { velocity } = this.state
+        velocity.x += force.x
+        velocity.y += force.y
+    }
+
+    applyDragForce() {
+        if (!this.state.isDragging) return
+
+        // change the position to drag position by applying force to velocity
+        const { position, dragPosition, velocity } = this.state
+        const dragForce = {
+            x: dragPosition.x - position.x - velocity.x,
+            y: dragPosition.y - position.y - velocity.y,
+        }
+
+        this.applyForce(dragForce)
+    }
+
+    applyBoundForce() {}
+
     onDragStart(evt: MouseEvent): void {
-        const mouseTypes: ObjectType = {
-            SCROLL: 1,
-            RIGHT: 2,
-        }
-
-        if (evt.button === mouseTypes.RIGHT || evt.button === mouseTypes.SCROLL) {
-            return
-        }
-
         evt.preventDefault()
         evt.stopPropagation()
 
-        // focus on form input elements
-        const formNodes = ['input', 'textarea', 'button', 'select', 'label']
-        if (this.options.allowInputFocus && formNodes.indexOf((<HTMLElement>evt.target).nodeName.toLowerCase()) > -1) {
-            return
-        }
-
-        const { mouse: mouseState } = this.state
-        mouseState.clickEnabled = false
-        mouseState.isMoving = false
-        mouseState.movingTimeoutId = null
-
         this.state.isDragging = true
-        this.state.start = {
+        this.state.startPosition = {
             x: evt.clientX,
             y: evt.clientY,
         }
 
-        this.state.previous = {
-            x: this.$container.scrollLeft,
-            y: this.$container.scrollTop,
+        // keep previous position before starting drag
+        this.state.previousPosition = {
+            ...this.state.position,
         }
+
+        this.setDragPosition(evt)
     }
 
     onDraging(evt: MouseEvent): void {
         if (!this.state.isDragging) return
-        if (!this.state.mouse.movingTimeoutId) {
-            this.state.mouse.movingTimeoutId = setTimeout(() => {
-                this.state.mouse.isMoving = true
-            }, 70)
-        }
-
-        const { start } = this.state
-        this.state.distance = {
-            x: (evt.clientX - start.x) * 2,
-            y: (evt.clientY - start.y) * 2,
-        }
-
-        this.startAnimationLoop()
+        this.setDragPosition(evt)
     }
 
     onDragEnd(): void {
         this.state.isDragging = false
-        const { mouse } = this.state
-        if (!mouse.isMoving) {
-            mouse.clickEnabled = true
-        }
+    }
 
-        mouse.isMoving = false
+    setDragPosition(evt: MouseEvent) {
+        const { startPosition, dragPosition, previousPosition } = this.state
+        dragPosition.x = previousPosition.x + evt.clientX - startPosition.x
+        dragPosition.y = previousPosition.y + evt.clientY - startPosition.y
     }
 
     adaptContentPosition(): void {
-        const { x: moveX, y: moveY } = this.state.distance
-        const { x: previousX, y: previousY } = this.state.previous
-        this.$container.scrollLeft = -moveX + previousX
-        this.$container.scrollTop = -moveY + previousY
+        const { position } = this.state
+        this.$content.style.transform = `translate(${position.x}px,${position.y}px)`
     }
 
-    doAnimate(): void {
-        if (!this.state.isRunning) return
-
-        if (!this.state.mouse.isMoving) {
-            this.state.isRunning = false
-        }
-
+    animate(): void {
+        this.update()
         this.adaptContentPosition()
-        this.rafID = window.requestAnimationFrame(this.doAnimate)
+        this.rafID = window.requestAnimationFrame(this.animate)
     }
 
-    startAnimationLoop(): void {
-        this.state.isRunning = true
+    startAnimation(): void {
         window.cancelAnimationFrame(this.rafID)
-        this.rafID = window.requestAnimationFrame(this.doAnimate)
+        this.rafID = window.requestAnimationFrame(this.animate)
     }
 }
 

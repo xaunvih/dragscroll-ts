@@ -1,6 +1,0 @@
-.drag-scroll {
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none; }
-  .drag-scroll::-webkit-scrollbar {
-    display: none; }

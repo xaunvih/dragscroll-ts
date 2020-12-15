@@ -5,29 +5,8 @@
     display: -webkit-flex;
     display: -moz-box;
     display: flex;
-}
-
-.container .drag-scroll.drag-scroll-vertical {
-    display: inline-block;
-    height: 500px;
-    width: auto;
-}
-
-.container .drag-scroll.drag-scroll-vertical ul {
-    display: block;
-}
-
-.container .drag-scroll.drag-scroll-vertical ul li {
-    margin: 0 0 20px 0;
-}
-
-.container .drag-scroll.drag-scroll-all {
-    height: 500px;
-    width: 700px;
-}
-
-.container .drag-scroll.drag-scroll-all .content ul li {
-    margin: 5px;
+    max-width: 1000px;
+    padding: 20px;
 }
 
 .container .drag-scroll ul {
@@ -47,7 +26,6 @@
     -webkit-flex-shrink: 0;
     flex-shrink: 0;
     background-color: gray;
-    margin-right: 20px;
     position: relative;
 }
 
