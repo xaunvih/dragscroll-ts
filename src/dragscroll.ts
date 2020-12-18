@@ -1,12 +1,13 @@
 import './polyfill'
-import { DragScrollOptions } from './@types'
+import { IDragScrollOptions, IDragScrollState, ICoordinate } from './@types'
+import EventEmiter from './emitter'
 
-class DragScroll {
-    options: any
+class DragScroll extends EventEmiter {
     $container: HTMLElement
     $content: HTMLElement
     rafID: number
-    state: any = {
+    options: IDragScrollOptions
+    state: IDragScrollState = {
         startPosition: {
             x: 0,
             y: 0,
@@ -27,13 +28,21 @@ class DragScroll {
             x: 0,
             y: 0,
         },
+        dragOffset: {
+            x: 0,
+            y: 0,
+        },
+        isRunning: false,
         isDragging: false,
     }
 
-    constructor(options: DragScrollOptions) {
+    constructor(options: IDragScrollOptions) {
+        super()
         this.options = Object.assign(
             {
                 friction: 0.95,
+                axis: 'x',
+                allowInputFocus: false,
             },
             options,
         )
@@ -44,40 +53,47 @@ class DragScroll {
         this.onDragStart = this.onDragStart.bind(this)
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
+        this.onClick = this.onClick.bind(this)
         this.animate = this.animate.bind(this)
+
         this.bindEvents()
     }
 
     bindEvents(): void {
+        this.$content.addEventListener('click', this.onClick)
         this.$content.addEventListener('mousedown', this.onDragStart)
         window.addEventListener('mousemove', this.onDraging)
         window.addEventListener('mouseup', this.onDragEnd)
     }
 
-    update() {
+    update(): void {
         this.applyDragForce()
-        this.applyLeftBoundForce()
-        this.applyRightBoundForce()
-        this.applyTopBoundForce()
-        this.applyBottomBoundForce()
+
+        if (!this.state.isDragging) {
+            this.applyAllBoundForce()
+        }
 
         const { position, velocity } = this.state
-        const { friction } = this.options
-
+        const { friction, axis } = this.options
         velocity.x *= friction
         velocity.y *= friction
 
-        position.x += velocity.x
-        position.y += velocity.y
+        if (axis !== 'y') {
+            position.x += velocity.x
+        }
+
+        if (axis !== 'x') {
+            position.y += velocity.y
+        }
     }
 
-    applyForce(force: any) {
+    applyForce(force: ICoordinate): void {
         const { velocity } = this.state
         velocity.x += force.x
         velocity.y += force.y
     }
 
-    applyDragForce() {
+    applyDragForce(): void {
         if (!this.state.isDragging) return
 
         // change the position to drag position by applying force to velocity
@@ -90,129 +106,73 @@ class DragScroll {
         this.applyForce(dragForce)
     }
 
-    applyLeftBoundForce() {
-        const { velocity, position, isDragging } = this.state
-        const { friction } = this.options
-        const leftBound = 0
-        const isInside = position.x > leftBound
-        if (isDragging || isInside) {
-            return
-        }
-
-        // bouncing past bound
-        const distance = leftBound - position.x
-        let force = distance * 0.1
-        const restX = position.x + ((velocity.x + force) * friction) / (1 - friction)
-        const isRestOutside = restX < leftBound
-        if (isRestOutside) {
-            this.applyForce({
-                x: force,
-                y: 0
-            })
-
-            return
-        }
-
-        // bounce back
-        this.applyForce({
-            x: distance * 0.1 - velocity.x,
-            y: 0
-        })
+    applyAllBoundForce(): void {
+        // left right top bottom bounds
+        ;[
+            {
+                bound: this.$container.clientWidth - this.$content.clientWidth,
+                axis: 'x',
+            },
+            {
+                bound: 0,
+                isForward: true,
+                axis: 'x',
+            },
+            {
+                bound: this.$container.clientHeight - this.$content.clientHeight,
+                axis: 'y',
+            },
+            {
+                bound: 0,
+                isForward: true,
+                axis: 'y',
+            },
+        ].forEach((edge) => this.applyBoundForce(edge))
     }
 
-    applyRightBoundForce() {
-        const { velocity, position, isDragging } = this.state
+    applyBoundForce({ bound, isForward = false, axis }: { bound: number; isForward?: boolean; axis: string }): void {
         const { friction } = this.options
-        const rightBound = this.$container.clientWidth - this.$content.clientWidth - 40
-        const isInside = position.x < rightBound
-        if (isDragging || isInside) {
+        const { velocity: currentVelocity, position: currentPosition } = this.state
+        const position = currentPosition[axis]
+        const velocity = currentVelocity[axis]
+        const isInside = isForward ? position < bound : position > bound
+        if (isInside) {
             return
         }
 
         // bouncing past bound
-        const distance = rightBound - position.x
+        const distance = bound - position
         let force = distance * 0.1
-        const restX = position.x + ((velocity.x + force) * friction) / (1 - friction)
-        const isRestOutside = restX > rightBound
-        if (isRestOutside) {
-            this.applyForce({
-                x: force,
-                y: 0
-            })
-
-            return
+        const restPosition = position + ((velocity + force) * friction) / (1 - friction)
+        const isRestOutside = isForward ? restPosition > bound : restPosition < bound
+        if (!isRestOutside) {
+            // bounce back
+            force = distance * 0.1 - velocity
         }
 
-        // bounce back
-        this.applyForce({
-            x: distance * 0.1 - velocity.x,
-            y: 0
-        })
+        this.applyForce({ x: 0, y: 0, [axis]: force })
     }
 
-    applyTopBoundForce() {
-        const { velocity, position, isDragging } = this.state
-        const { friction } = this.options
-        const topBound = 0
-        const isInside = position.y < topBound
-        if (isDragging || isInside) {
-            return
+    onClick(evt: MouseEvent): void {
+        const { dragOffset } = this.state
+        const clickThreshol = 5
+
+        // detect a clicking or dragging by measuring the distance
+        if (Math.abs(dragOffset.x) > clickThreshol || Math.abs(dragOffset.y) > clickThreshol) {
+            evt.preventDefault()
+            evt.stopPropagation()
         }
-
-        // bouncing past bound
-        const distance = topBound - position.y
-        let force = distance * 0.1
-        const restY = position.y + ((velocity.y + force) * friction) / (1 - friction)
-        const isRestOutside = restY > topBound
-        if (isRestOutside) {
-            this.applyForce({
-                x: 0,
-                y: force
-            })
-
-            return
-        }
-
-        // bounce back
-        this.applyForce({
-            x: 0,
-            y: distance * 0.1 - velocity.y
-        })
-    }
-
-    applyBottomBoundForce() {
-        const { velocity, position, isDragging } = this.state
-        const { friction } = this.options
-        const bottomBound = 0
-        const isInside = position.y > bottomBound
-        if (isDragging || isInside) {
-            return
-        }
-
-        // bouncing past bound
-        const distance = bottomBound - position.y
-        let force = distance * 0.1
-        const restY = position.y + ((velocity.y + force) * friction) / (1 - friction)
-        const isRestOutside = restY < bottomBound
-        if (isRestOutside) {
-            this.applyForce({
-                x: 0,
-                y: force
-            })
-
-            return
-        }
-
-        // bounce back
-        this.applyForce({
-            x: 0,
-            y: distance * 0.1 - velocity.y
-        })
     }
 
     onDragStart(evt: MouseEvent): void {
         evt.preventDefault()
         evt.stopPropagation()
+
+        // allow inputs can be focused by clicking
+        const formNodes = ['input', 'textarea', 'button', 'select', 'label']
+        if (this.options.allowInputFocus && formNodes.indexOf((<HTMLElement>evt.target).nodeName.toLowerCase()) > -1) {
+            return
+        }
 
         this.state.isDragging = true
         this.state.startPosition = {
@@ -238,10 +198,13 @@ class DragScroll {
         this.state.isDragging = false
     }
 
-    setDragPosition(evt: MouseEvent) {
-        const { startPosition, dragPosition, previousPosition } = this.state
-        dragPosition.x = previousPosition.x + evt.clientX - startPosition.x
-        dragPosition.y = previousPosition.y + evt.clientY - startPosition.y
+    setDragPosition(evt: MouseEvent): void {
+        const { startPosition, dragPosition, previousPosition, dragOffset } = this.state
+
+        dragOffset.x = evt.clientX - startPosition.x
+        dragOffset.y = evt.clientY - startPosition.y
+        dragPosition.x = previousPosition.x + dragOffset.x
+        dragPosition.y = previousPosition.y + dragOffset.y
     }
 
     adaptContentPosition(): void {
@@ -249,13 +212,26 @@ class DragScroll {
         this.$content.style.transform = `translate(${position.x}px,${position.y}px)`
     }
 
+    isMoving(): boolean {
+        const { isDragging, velocity } = this.state
+        return isDragging || Math.abs(velocity.x) >= 0.01 || Math.abs(velocity.y) >= 0.01
+    }
+
     animate(): void {
+        if (!this.state.isRunning) return
+
         this.update()
+
+        if (!this.isMoving()) {
+            this.state.isRunning = false
+        }
+
         this.adaptContentPosition()
         this.rafID = window.requestAnimationFrame(this.animate)
     }
 
     startAnimation(): void {
+        this.state.isRunning = true
         window.cancelAnimationFrame(this.rafID)
         this.rafID = window.requestAnimationFrame(this.animate)
     }

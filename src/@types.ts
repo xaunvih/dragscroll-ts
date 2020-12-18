@@ -1,37 +1,29 @@
-export interface DragScrollOptions {
+export { Emitter, Handler, EventType } from 'mitt'
+
+export interface IDragScrollOptions {
     $container: HTMLElement
     $content: HTMLElement
-    hideScroll: boolean
-    allowInputFocus: boolean
+    axis: string
+    friction?: number
+    allowInputFocus?: false
 }
 
-export interface Corrdinate {
+export interface ICoordinate {
     x: number
     y: number
 }
 
-export interface DragScrollState {
-    start: Corrdinate
-    previous: Corrdinate
-    distance: Corrdinate
-    isDown: boolean
+export interface IDragScrollState {
+    startPosition: ICoordinate
+    previousPosition: ICoordinate
+    position: ICoordinate
+    dragPosition: ICoordinate
+    velocity: ICoordinate
+    dragOffset: ICoordinate
     isDragging: boolean
     isRunning: boolean
-    mouse: {
-        clickEnabled: boolean
-        isMoving: boolean
-        movingTimeoutId: ReturnType<typeof setTimeout>
-    }
 }
 
-export interface DragScrollState2 {
-    start: Corrdinate
-    previous: Corrdinate
-    distance: Corrdinate
-    isDown: boolean
-    isDragging: boolean
-}
-
-export interface ObjectType {
+export interface IObject {
     [key: string]: number | string
 }
