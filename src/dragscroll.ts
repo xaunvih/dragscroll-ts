@@ -3,15 +3,6 @@ import { IDragScrollOptions, IDragScrollState, ICoordinate } from './@types'
 import EventEmitter from './emitter'
 import { hasTextSelectFromPoint } from './utils'
 
-/**
- * Todo:
- * 1. Update Readme.md
- * - Example of using Js, CommonJs, Ejs, Ts
- * - API: scrollTo, scrollToCenter, setInputCanBeFocused, setTextCanBeSelected, destroy
- * - Options
- * 2. Publish to NPM
- */
-
 class DragScroll extends EventEmitter {
     $container: HTMLElement
     $content: HTMLElement

@@ -1,79 +1,83 @@
-# 🙌😍✌️ DragScroll
+# DragScroll library
 
 A drag to scroll library. Supports smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
-### Installation
+## Usage
 
-You can install it via `npm` or `yarn` package manager:
-
-```bash
-npm i @springjs/dragscroll
-```
-
-```bash
-yarn add @springjs/dragscroll
-```
-
-### Usage
-
-The most simple setup with default settings:
+### First of all, you need to import this library:
 
 ```js
-// with script tag
-<script type="type/javascript" src="./path/@springjs/dragscroll/build/dragscroll.min.js"></script>
+// Javascript tag
+<script type="type/javascript" src="dragscroll.min.js"></script>
 ```
 
 ```js
-// common js
+// Common Javascript
 const DragScroll = require('@springjs/dragscroll)
 ```
 
 ```js
-// es module
-import '@springjs/dragscroll/buid/dragscroll.scss'
+// ES6 Module Javascript
 import DragScroll from '@springjs/dragscroll'
 ```
 
 ```js
+// Typescript
+interface IDragScrollOptions {
+    $container: HTMLElement
+    $content: HTMLElement
+    axis: string
+    allowInputFocus?: boolean
+    allowSelectText?: boolean
+}
+
+import DragScroll from '@springjs/dragscroll/src/index.ts'
+```
+
+### Next step, init drag scroll instance
+
+```js
 const $container = document.getElementById('demo-wrapper')
+const $content = document.getElementById('demo-content')
+
 new DragScroll({
     $container: $container,
-    gapSide: 30,
-    speed: 2,
+    $content: $content,
+    axix: 'x',
+    allowInputFocus: true
+    allowSelectText: false
 })
 ```
 
-```js
-// Typescript
-import DragScroll, { DragScrollOptions } from '@springjs/dragscroll'
-```
+## Config options
 
-### Config options
+| Option          | Type        | Description                                       |
+| --------------- | ----------- | ------------------------------------------------- |
+| \$container     | HTMLElement | The element wrap the dragable element             |
+| \$content       | HTMLElement | The dragable child element of \$container.        |
+| axis            | string      | Default is 'x'. There are 3 values: 'x', 'y','xy' |
+|                 |             | 'x' is horizontal direction                       |
+|                 |             | 'y' is vertical direction                         |
+|                 |             | 'xy' is both direction                            |
+| allowInputFocus | boolean     | Allow input fields can be focused                 |
+| allowSelectText | boolean     | Allow text content can be selected                |
 
-| Option      | Type    | Description                        |
-| ----------- | ------- | ---------------------------------- |
-| inputsFocus | boolean | Allow input fields to be focused   |
-| hideScroll  | boolean | Default is hide browsers scrollbar |
+## API
 
-### API
+| Name                 | Description                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| scrollTo             | Pass coordinate object { x, y } to scroll to target position |
+| setInputCanBeFocused | Default is true. Input fields can be focused                 |
+| setTextCanBeSelected | Default is true. Text content can be selected                |
+| destroy              | Remove all listeners                                         |
 
-| Name       | Description                        |
-| ---------- | ---------------------------------- |
-| scrollTo() | Param is cordinate object { x, y } |
+## Files size
 
-### Files size
-
-| File                             | size    |
-| -------------------------------- | ------- |
-| dragscroll.cjs.js                | 5 KB    |
-| dragscroll.es.js                 | 4.98 KB |
-| dragscroll.min.js (included css) | 7.75 KB |
-
-### Reference
-
--   Hide scrollwith with css:
-    -   https://developer.mozilla.org/en-US/docs/Archive/Web/CSS/-ms-overflow-style
-    -   https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar
+| File              | size     |
+| ----------------- | -------- |
+| dragscroll.min.js | 7.53 KB  |
+| dragscroll.cjs.js | 13.23 KB |
+| dragscroll.es.js  | 13.22 KB |
 
 ### License
 
