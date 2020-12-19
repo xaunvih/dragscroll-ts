@@ -1,8 +1,8 @@
-# DragScroll library
+# 🎉 DragScroll library
 
-A drag to scroll library. Supports smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
+Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
-## Usage
+## Usage 
 
 ### First of all, you need to import this library:
 
