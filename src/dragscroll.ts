@@ -5,14 +5,13 @@ import { hasTextSelectFromPoint } from './utils'
 
 /**
  * Todo:
- * 1. Define scrollTo & scrollToCenter func
- * 2. Update Readme.md
+ * 1. Update Readme.md
  * - Example of using Js, CommonJs, Ejs, Ts
  * - API: scrollTo, scrollToCenter, setInputCanBeFocused, setTextCanBeSelected, destroy
  * - Options
- * 3. Change some methods to be priavte
- * 4. Banner lisence
- * 5. Publish to NPM
+ * 2. Change some methods to be priavte
+ * 3. Banner lisence
+ * 4. Publish to NPM
  */
 
 class DragScroll extends EventEmitter {
@@ -46,8 +45,10 @@ class DragScroll extends EventEmitter {
             dragPosition: { ...initialCoordinate },
             velocity: { ...initialCoordinate },
             dragOffset: { ...initialCoordinate },
+            targetPosition: { ...initialCoordinate },
             isRunning: false,
             isDragging: false,
+            isScrollToRunning: false,
         }
 
         this.$container = this.options.$container
@@ -89,10 +90,15 @@ class DragScroll extends EventEmitter {
     }
 
     update(): void {
+        const { isDragging, isScrollToRunning } = this.state
         this.applyDragForce()
 
-        if (!this.state.isDragging) {
+        if (!isDragging) {
             this.applyAllBoundForce()
+        }
+
+        if (isScrollToRunning) {
+            this.applyTargetForce()
         }
 
         const { position, velocity } = this.state
@@ -113,6 +119,14 @@ class DragScroll extends EventEmitter {
         const { velocity } = this.state
         velocity.x += force.x
         velocity.y += force.y
+    }
+
+    applyTargetForce(): void {
+        const { position, velocity, targetPosition } = this.state
+        this.applyForce({
+            x: (targetPosition.x - position.x) * 0.08 - velocity.x,
+            y: (targetPosition.y - position.y) * 0.08 - velocity.y,
+        })
     }
 
     applyDragForce(): void {
@@ -258,6 +272,18 @@ class DragScroll extends EventEmitter {
         this.options.allowInputFocus = focused
     }
 
+    scrollTo(targetPosition: ICoordinate): void {
+        const position = {
+            x: 0,
+            y: 0,
+            ...targetPosition,
+        }
+
+        this.state.isScrollToRunning = true
+        this.state.targetPosition = position
+        this.startAnimation()
+    }
+
     adaptContentPosition(): void {
         const { position } = this.state
         this.$content.style.transform = `translate(${position.x}px,${position.y}px)`
@@ -275,6 +301,7 @@ class DragScroll extends EventEmitter {
 
         if (!this.isMoving()) {
             this.state.isRunning = false
+            this.state.isScrollToRunning = false
         }
 
         this.adaptContentPosition()

@@ -21,8 +21,10 @@ export interface IDragScrollState {
     dragPosition: ICoordinate
     velocity: ICoordinate
     dragOffset: ICoordinate
+    targetPosition: ICoordinate
     isDragging: boolean
     isRunning: boolean
+    isScrollToRunning: boolean
 }
 
 export interface IObject {
