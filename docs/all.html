@@ -1,0 +1,9 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/><title>Horizontal & Vertical scroll | DragScroll</title><link href="dragscroll.css" rel="stylesheet"></head><body><main class="container"><ul class="menu"><li><a href="./index.html">Horizontal</a></li><li><a href="vertical.html">Vertical</a></li><li><a href="./all.html">Horizontal & Vertical</a></li></ul><h2>Drag to scroll horizontally & vertically</h2><div class="drag-scroll drag-scroll-all"><div class="img-wrapper"><img src="https://images.unsplash.com/photo-1591818949732-4bad71ef07f3?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MzJ8fGZydWl0fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=60"/></div></div></main><script>window.addEventListener('DOMContentLoaded', () => {
+            const $container = document.querySelector('.drag-scroll')
+            const $content = $container.querySelector('.img-wrapper')
+            window.dragSroll = new DragScroll({
+                $container: $container,
+                $content: $content,
+                axis: 'xy'
+            });
+        })</script><script src="dragscroll.js"></script></body></html>
