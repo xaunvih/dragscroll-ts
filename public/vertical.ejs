@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Horizontal scroll | DragScroll</title>
+    <title>Vertical scroll | DragScroll</title>
 </head>
 
 <body>
@@ -15,38 +15,36 @@
             <li><a href="./all.html">Horizontal & Vertical</a></li>
         </ul>
 
-        <h2>Drag to scroll horizontally - In case items have the link</h2>
-        <p>You can flick the content to feel</p>
-
-        <div class="drag-scroll drag-scroll-horizontal">
+        <h2>Drag to scroll vertically</h2>
+        <div class="drag-scroll drag-scroll-vertical">
             <ul>
                 <% for (var i =1; i <= 3;  i++ ) { %>
                 <li class="item">
-                    <a href="https://unsplash.com/">
+                    <a>
                         <img
                             src="https://images.unsplash.com/photo-1547514701-42782101795e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8M3x8ZnJ1aXR8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" />
                     </a>
                 </li>
                 <li class="item">
-                    <a href="https://unsplash.com/">
+                    <a>
                         <img
                             src="https://images.unsplash.com/photo-1421167418805-7f170a738eb4?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTJ8fGZydWl0fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" />
                     </a>
                 </li>
                 <li class="item">
-                    <a href="https://unsplash.com/">
+                    <a>
                         <img
                             src="https://images.unsplash.com/photo-1530730459653-e0edd4c6072e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTR8fGZydWl0fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" />
                     </a>
                 </li>
                 <li class="item">
-                    <a href="https://unsplash.com/">
+                    <a>
                         <img
                             src="https://images.unsplash.com/photo-1591287083773-9a52ba8184a4?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTV8fGZydWl0fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" />
                     </a>
                 </li>
                 <li class="item">
-                    <a href="https://unsplash.com/">
+                    <a>
                         <img
                             src="https://images.unsplash.com/photo-1439127989242-c3749a012eac?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MjB8fGZydWl0fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" />
                     </a>
@@ -54,26 +52,6 @@
                 <% } %>
             </ul>
         </div>
-
-        <h2>Drag to scroll horizontally - In case items have input field</h2>
-
-        <div class="drag-scroll drag-scroll-horizontal">
-            <ul>
-                <% for (var i =1; i <= 10;  i++ ) { %>
-                <li class="item">
-                    <textarea placeholder="Type something..."></textarea>
-                </li>
-                <li class="item">
-                    <label>
-                        <p>click me to focus input below</p>
-                        <input type="text" placeholder="Type something..." />
-                    </label>
-                </li>
-                <% } %>
-            </ul>
-        </div>
-
-
     </main>
 
     <script>
@@ -83,20 +61,9 @@
                 const $content = $container.querySelector('ul')
                 window.dragSroll = new DragScroll({
                     $container: $container,
-                    $content: $content
+                    $content: $content,
+                    axis: 'y'
                 });
-
-                dragSroll.on('dragstart', function (evt) {
-                    console.log('dragstart', evt)
-                })
-
-                dragSroll.on('dragging', function (evt) {
-                    console.log('dragging', evt)
-                })
-
-                dragSroll.on('dragend', function (evt) {
-                    console.log('dragend', evt)
-                })
             })
         })
     </script>

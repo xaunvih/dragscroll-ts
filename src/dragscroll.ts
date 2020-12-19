@@ -1,170 +1,306 @@
 import './polyfill'
-import { DragScrollOptions, DragScrollState, ObjectType, Corrdinate } from './@types'
+import { IDragScrollOptions, IDragScrollState, ICoordinate } from './@types'
+import EventEmitter from './emitter'
+import { hasTextSelectFromPoint } from './utils'
 
-class DragScroll {
-    options: DragScrollOptions
+class DragScroll extends EventEmitter {
     $container: HTMLElement
     $content: HTMLElement
     rafID: number
+    options: IDragScrollOptions
+    state: IDragScrollState
 
-    state: DragScrollState = {
-        start: {
-            x: 0,
-            y: 0,
-        },
-        previous: {
-            x: 0,
-            y: 0,
-        },
-        distance: {
-            x: 0,
-            y: 0,
-        },
-        isDown: false,
-        isDragging: false,
-        isRunning: false,
-        mouse: {
-            clickEnabled: false,
-            isMoving: false,
-            movingTimeoutId: null,
-        },
-    }
-
-    static get DIRECTION(): ObjectType {
-        return {
-            ALL: 'ALL',
-            HORIZONTAL: 'HORIZONTAL',
-            VERTICAL: 'VERTICAL',
-        }
-    }
-
-    constructor(options: DragScrollOptions) {
+    constructor(options: IDragScrollOptions) {
+        super()
         this.options = Object.assign(
             {
+                friction: 0.95,
+                axis: 'x',
                 allowInputFocus: true,
-                hideScroll: true,
-                onDragStart: null,
-                onDragging: null,
-                onDragEnd: null,
+                allowSelectText: true,
             },
             options,
         )
 
+        const initialCoordinate = {
+            x: 0,
+            y: 0,
+        }
+
+        this.state = {
+            startPosition: { ...initialCoordinate },
+            previousPosition: { ...initialCoordinate },
+            position: { ...initialCoordinate },
+            dragPosition: { ...initialCoordinate },
+            velocity: { ...initialCoordinate },
+            dragOffset: { ...initialCoordinate },
+            targetPosition: { ...initialCoordinate },
+            isRunning: false,
+            isDragging: false,
+            isScrollToRunning: false,
+        }
+
         this.$container = this.options.$container
         this.$content = this.options.$content
-        this.onClick = this.onClick.bind(this)
+
         this.onDragStart = this.onDragStart.bind(this)
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
-        this.doAnimate = this.doAnimate.bind(this)
-        this.initDom()
+        this.onClick = this.onClick.bind(this)
+        this.animate = this.animate.bind(this)
+
         this.bindEvents()
     }
 
-    initDom(): void {
-        if (this.options.hideScroll) {
-            this.$container.classList.add('drag-scroll')
+    bindEvents(): void {
+        // Mouse events
+        this.$content.addEventListener('click', this.onClick)
+        this.$content.addEventListener('mousedown', this.onDragStart)
+        window.addEventListener('mousemove', this.onDraging)
+        window.addEventListener('mouseup', this.onDragEnd)
+
+        // Touch events
+        this.$content.addEventListener('touchstart', this.onDragStart)
+        window.addEventListener('touchmove', this.onDraging)
+        window.addEventListener('touchend', this.onDragEnd)
+    }
+
+    destroy(): void {
+        // Mouse events
+        this.$content.removeEventListener('click', this.onClick)
+        this.$content.removeEventListener('mousedown', this.onDragStart)
+        window.removeEventListener('mousemove', this.onDraging)
+        window.removeEventListener('mouseup', this.onDragEnd)
+
+        // Touch events
+        this.$content.removeEventListener('touchstart', this.onDragStart)
+        window.removeEventListener('touchmove', this.onDraging)
+        window.removeEventListener('touchend', this.onDragEnd)
+    }
+
+    update(): void {
+        const { isDragging, isScrollToRunning } = this.state
+        this.applyDragForce()
+
+        if (!isDragging) {
+            this.applyAllBoundForce()
+        }
+
+        if (isScrollToRunning) {
+            this.applyTargetForce()
+        }
+
+        const { position, velocity } = this.state
+        const { friction, axis } = this.options
+        velocity.x *= friction
+        velocity.y *= friction
+
+        if (axis !== 'y') {
+            position.x += velocity.x
+        }
+
+        if (axis !== 'x') {
+            position.y += velocity.y
         }
     }
 
-    bindEvents(): void {
-        this.$content.addEventListener('click', this.onClick, true)
-        this.$content.addEventListener('mousedown', this.onDragStart, true)
-        window.addEventListener('mousemove', this.onDraging)
-        window.addEventListener('mouseup', this.onDragEnd)
+    applyForce(force: ICoordinate): void {
+        const { velocity } = this.state
+        velocity.x += force.x
+        velocity.y += force.y
+    }
+
+    applyTargetForce(): void {
+        const { position, velocity, targetPosition } = this.state
+        this.applyForce({
+            x: (targetPosition.x - position.x) * 0.08 - velocity.x,
+            y: (targetPosition.y - position.y) * 0.08 - velocity.y,
+        })
+    }
+
+    applyDragForce(): void {
+        if (!this.state.isDragging) return
+
+        // change the position to drag position by applying force to velocity
+        const { position, dragPosition, velocity } = this.state
+        const dragForce = {
+            x: dragPosition.x - position.x - velocity.x,
+            y: dragPosition.y - position.y - velocity.y,
+        }
+
+        this.applyForce(dragForce)
+    }
+
+    applyAllBoundForce(): void {
+        // left right top bottom bounds
+        ;[
+            {
+                bound: this.$container.clientWidth - this.$content.clientWidth,
+                axis: 'x',
+            },
+            {
+                bound: 0,
+                isForward: true,
+                axis: 'x',
+            },
+            {
+                bound: this.$container.clientHeight - this.$content.clientHeight,
+                axis: 'y',
+            },
+            {
+                bound: 0,
+                isForward: true,
+                axis: 'y',
+            },
+        ].forEach((edge) => this.applyBoundForce(edge))
+    }
+
+    applyBoundForce({ bound, isForward = false, axis }: { bound: number; isForward?: boolean; axis: string }): void {
+        const { friction } = this.options
+        const { velocity: currentVelocity, position: currentPosition } = this.state
+        const position = currentPosition[axis]
+        const velocity = currentVelocity[axis]
+        const isInside = isForward ? position < bound : position > bound
+        if (isInside) {
+            return
+        }
+
+        // bouncing past bound
+        const distance = bound - position
+        let force = distance * 0.1
+        const restPosition = position + ((velocity + force) * friction) / (1 - friction)
+        const isRestOutside = isForward ? restPosition > bound : restPosition < bound
+        if (!isRestOutside) {
+            // bounce back
+            force = distance * 0.1 - velocity
+        }
+
+        this.applyForce({ x: 0, y: 0, [axis]: force })
     }
 
     onClick(evt: MouseEvent): void {
-        if (this.state.mouse.clickEnabled) return
-        evt.preventDefault()
-        evt.stopPropagation()
+        const { dragOffset } = this.state
+        const clickThreshol = 5
+
+        // detect a clicking or dragging by measuring the distance
+        if (Math.abs(dragOffset.x) > clickThreshol || Math.abs(dragOffset.y) > clickThreshol) {
+            evt.preventDefault()
+            evt.stopPropagation()
+        }
     }
 
-    onDragStart(evt: MouseEvent): void {
-        const mouseTypes: ObjectType = {
-            SCROLL: 1,
-            RIGHT: 2,
-        }
+    onDragStart(evt: MouseEvent | TouchEvent): void {
+        const $ele = <HTMLElement>evt.target
 
-        if (evt.button === mouseTypes.RIGHT || evt.button === mouseTypes.SCROLL) {
+        // allow inputs can be focused by clicking
+        const formNodes = ['input', 'textarea', 'button', 'select', 'label']
+        if (this.options.allowInputFocus && formNodes.indexOf($ele.nodeName.toLowerCase()) > -1) {
             return
         }
+
+        const isTouchEvent = evt instanceof TouchEvent
+        const { clientX, clientY } = isTouchEvent ? (<TouchEvent>evt).targetTouches[0] : <MouseEvent>evt
+
+        // case select text content
+        if (this.options.allowSelectText && hasTextSelectFromPoint($ele, clientX, clientY)) return
 
         evt.preventDefault()
         evt.stopPropagation()
 
-        // focus on form input elements
-        const formNodes = ['input', 'textarea', 'button', 'select', 'label']
-        if (this.options.allowInputFocus && formNodes.indexOf((<HTMLElement>evt.target).nodeName.toLowerCase()) > -1) {
-            return
-        }
-
-        const { mouse: mouseState } = this.state
-        mouseState.clickEnabled = false
-        mouseState.isMoving = false
-        mouseState.movingTimeoutId = null
+        // trigger drag start event
+        this.trigger('dragstart', evt)
 
         this.state.isDragging = true
-        this.state.start = {
-            x: evt.clientX,
-            y: evt.clientY,
+        this.state.startPosition = {
+            x: clientX,
+            y: clientY,
         }
 
-        this.state.previous = {
-            x: this.$container.scrollLeft,
-            y: this.$container.scrollTop,
+        // keep previous position before starting drag
+        this.state.previousPosition = {
+            ...this.state.position,
         }
+
+        this.setDragPosition(this.state.startPosition)
+        this.startAnimation()
     }
 
-    onDraging(evt: MouseEvent): void {
+    onDraging(evt: MouseEvent | TouchEvent): void {
         if (!this.state.isDragging) return
-        if (!this.state.mouse.movingTimeoutId) {
-            this.state.mouse.movingTimeoutId = setTimeout(() => {
-                this.state.mouse.isMoving = true
-            }, 70)
-        }
 
-        const { start } = this.state
-        this.state.distance = {
-            x: (evt.clientX - start.x) * 2,
-            y: (evt.clientY - start.y) * 2,
-        }
+        const isTouchEvent = evt instanceof TouchEvent
+        const { clientX, clientY } = isTouchEvent ? (<TouchEvent>evt).targetTouches[0] : <MouseEvent>evt
 
-        this.startAnimationLoop()
+        this.setDragPosition({
+            x: clientX,
+            y: clientY,
+        })
+
+        // trigger dragging event
+        this.trigger('dragging', evt)
     }
 
-    onDragEnd(): void {
-        this.state.isDragging = false
-        const { mouse } = this.state
-        if (!mouse.isMoving) {
-            mouse.clickEnabled = true
+    onDragEnd(evt: MouseEvent | TouchEvent): void {
+        if (this.state.isDragging) {
+            // trigger drag end event
+            this.trigger('dragend', evt)
         }
 
-        mouse.isMoving = false
+        this.state.isDragging = false
+    }
+
+    setDragPosition({ x, y }: ICoordinate): void {
+        const { startPosition, dragPosition, previousPosition, dragOffset } = this.state
+        dragOffset.x = x - startPosition.x
+        dragOffset.y = y - startPosition.y
+        dragPosition.x = previousPosition.x + dragOffset.x
+        dragPosition.y = previousPosition.y + dragOffset.y
+    }
+
+    setInputCanBeFocused(focused: boolean = false): void {
+        this.options.allowInputFocus = focused
+    }
+
+    scrollTo(targetPosition: ICoordinate): void {
+        const position = {
+            x: 0,
+            y: 0,
+            ...targetPosition,
+        }
+
+        this.state.isScrollToRunning = true
+        this.state.targetPosition = position
+        this.startAnimation()
     }
 
     adaptContentPosition(): void {
-        const { x: moveX, y: moveY } = this.state.distance
-        const { x: previousX, y: previousY } = this.state.previous
-        this.$container.scrollLeft = -moveX + previousX
-        this.$container.scrollTop = -moveY + previousY
+        const { position } = this.state
+        this.$content.style.transform = `translate(${position.x}px,${position.y}px)`
     }
 
-    doAnimate(): void {
+    isMoving(): boolean {
+        const { isDragging, velocity } = this.state
+        return isDragging || Math.abs(velocity.x) >= 0.01 || Math.abs(velocity.y) >= 0.01
+    }
+
+    animate(): void {
         if (!this.state.isRunning) return
 
-        if (!this.state.mouse.isMoving) {
+        this.update()
+
+        if (!this.isMoving()) {
             this.state.isRunning = false
+            this.state.isScrollToRunning = false
         }
 
         this.adaptContentPosition()
-        this.rafID = window.requestAnimationFrame(this.doAnimate)
+        this.rafID = window.requestAnimationFrame(this.animate)
     }
 
-    startAnimationLoop(): void {
+    startAnimation(): void {
         this.state.isRunning = true
         window.cancelAnimationFrame(this.rafID)
-        this.rafID = window.requestAnimationFrame(this.doAnimate)
+        this.rafID = window.requestAnimationFrame(this.animate)
     }
 }
 

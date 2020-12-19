@@ -1,29 +1,30 @@
-export interface DragScrollOptions {
+export interface IDragScrollOptions {
     $container: HTMLElement
     $content: HTMLElement
-    hideScroll: boolean
-    allowInputFocus: boolean
+    axis: string
+    friction?: number
+    allowInputFocus?: boolean
+    allowSelectText?: boolean
 }
 
-export interface Corrdinate {
+export interface ICoordinate {
     x: number
     y: number
 }
 
-export interface DragScrollState {
-    start: Corrdinate
-    previous: Corrdinate
-    distance: Corrdinate
-    isDown: boolean
+export interface IDragScrollState {
+    startPosition: ICoordinate
+    previousPosition: ICoordinate
+    position: ICoordinate
+    dragPosition: ICoordinate
+    velocity: ICoordinate
+    dragOffset: ICoordinate
+    targetPosition: ICoordinate
     isDragging: boolean
     isRunning: boolean
-    mouse: {
-        clickEnabled: boolean
-        isMoving: boolean
-        movingTimeoutId: ReturnType<typeof setTimeout>
-    }
+    isScrollToRunning: boolean
 }
 
-export interface ObjectType {
+export interface IObject {
     [key: string]: number | string
 }
