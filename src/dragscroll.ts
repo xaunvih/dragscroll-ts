@@ -5,13 +5,14 @@ import { hasTextSelectFromPoint } from './utils'
 
 /**
  * Todo:
- * 1. Add touch events
- * 2. Define scrollTo & scrollToCenter func
- * 3. Update Readme.md
+ * 1. Define scrollTo & scrollToCenter func
+ * 2. Update Readme.md
  * - Example of using Js, CommonJs, Ejs, Ts
- * - API: scrollTo, scrollToCenter, setInputCanBeFocused
+ * - API: scrollTo, scrollToCenter, setInputCanBeFocused, setTextCanBeSelected, destroy
  * - Options
+ * 3. Change some methods to be priavte
  * 4. Banner lisence
+ * 5. Publish to NPM
  */
 
 class DragScroll extends EventEmitter {
@@ -69,12 +70,12 @@ class DragScroll extends EventEmitter {
         window.addEventListener('mouseup', this.onDragEnd)
 
         // Touch events
-        // this.$content.addEventListener('touchstart', this.onDragStart)
-        // window.addEventListener('touchmove', this.onDraging)
-        // window.addEventListener('touchend', this.onDragEnd)
+        this.$content.addEventListener('touchstart', this.onDragStart)
+        window.addEventListener('touchmove', this.onDraging)
+        window.addEventListener('touchend', this.onDragEnd)
     }
 
-    unbindEvents(): void {
+    destroy(): void {
         // Mouse events
         this.$content.removeEventListener('click', this.onClick)
         this.$content.removeEventListener('mousedown', this.onDragStart)
@@ -82,9 +83,9 @@ class DragScroll extends EventEmitter {
         window.removeEventListener('mouseup', this.onDragEnd)
 
         // Touch events
-        // this.$content.removeEventListener('touchstart', this.onDragStart)
-        // window.removeEventListener('touchmove', this.onDraging)
-        // window.removeEventListener('touchend', this.onDragEnd)
+        this.$content.removeEventListener('touchstart', this.onDragStart)
+        window.removeEventListener('touchmove', this.onDraging)
+        window.removeEventListener('touchend', this.onDragEnd)
     }
 
     update(): void {
@@ -185,18 +186,20 @@ class DragScroll extends EventEmitter {
         }
     }
 
-    onDragStart(evt: MouseEvent): void {
-        // const isTouchEvent = event instanceof TouchEvent
-        // const evt = isTouchEvent ? (<TouchEvent>event).touches[0] : event
+    onDragStart(evt: MouseEvent | TouchEvent): void {
+        const $ele = <HTMLElement>evt.target
 
         // allow inputs can be focused by clicking
         const formNodes = ['input', 'textarea', 'button', 'select', 'label']
-        if (this.options.allowInputFocus && formNodes.indexOf((<HTMLElement>evt.target).nodeName.toLowerCase()) > -1) {
+        if (this.options.allowInputFocus && formNodes.indexOf($ele.nodeName.toLowerCase()) > -1) {
             return
         }
 
+        const isTouchEvent = evt instanceof TouchEvent
+        const { clientX, clientY } = isTouchEvent ? (<TouchEvent>evt).targetTouches[0] : <MouseEvent>evt
+
         // case select text content
-        if (this.options.allowSelectText && hasTextSelectFromPoint(evt)) return
+        if (this.options.allowSelectText && hasTextSelectFromPoint($ele, clientX, clientY)) return
 
         evt.preventDefault()
         evt.stopPropagation()
@@ -206,8 +209,8 @@ class DragScroll extends EventEmitter {
 
         this.state.isDragging = true
         this.state.startPosition = {
-            x: evt.clientX,
-            y: evt.clientY,
+            x: clientX,
+            y: clientY,
         }
 
         // keep previous position before starting drag
@@ -215,19 +218,26 @@ class DragScroll extends EventEmitter {
             ...this.state.position,
         }
 
-        this.setDragPosition(evt)
+        this.setDragPosition(this.state.startPosition)
         this.startAnimation()
     }
 
-    onDraging(evt: MouseEvent): void {
+    onDraging(evt: MouseEvent | TouchEvent): void {
         if (!this.state.isDragging) return
-        this.setDragPosition(evt)
+
+        const isTouchEvent = evt instanceof TouchEvent
+        const { clientX, clientY } = isTouchEvent ? (<TouchEvent>evt).targetTouches[0] : <MouseEvent>evt
+
+        this.setDragPosition({
+            x: clientX,
+            y: clientY,
+        })
 
         // trigger dragging event
         this.trigger('dragging', evt)
     }
 
-    onDragEnd(evt: MouseEvent): void {
+    onDragEnd(evt: MouseEvent | TouchEvent): void {
         if (this.state.isDragging) {
             // trigger drag end event
             this.trigger('dragend', evt)
@@ -236,11 +246,10 @@ class DragScroll extends EventEmitter {
         this.state.isDragging = false
     }
 
-    setDragPosition(evt: MouseEvent): void {
+    setDragPosition({ x, y }: ICoordinate): void {
         const { startPosition, dragPosition, previousPosition, dragOffset } = this.state
-
-        dragOffset.x = evt.clientX - startPosition.x
-        dragOffset.y = evt.clientY - startPosition.y
+        dragOffset.x = x - startPosition.x
+        dragOffset.y = y - startPosition.y
         dragPosition.x = previousPosition.x + dragOffset.x
         dragPosition.y = previousPosition.y + dragOffset.y
     }
