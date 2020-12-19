@@ -11,8 +11,7 @@ module.exports = merge(webpackCommon, {
     mode: 'development',
     devtool: 'eval-source-map',
     entry: {
-        styles: path.resolve(__dirname, 'public/scss/styles.scss'),
-        dragscroll: path.resolve(__dirname, 'src/index.ts'),
+        dragscroll: path.resolve(__dirname, 'public/js/docs.ts'),
     },
     plugins: [
         ...files.map((file) => {
