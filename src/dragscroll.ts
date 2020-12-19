@@ -9,9 +9,7 @@ import { hasTextSelectFromPoint } from './utils'
  * - Example of using Js, CommonJs, Ejs, Ts
  * - API: scrollTo, scrollToCenter, setInputCanBeFocused, setTextCanBeSelected, destroy
  * - Options
- * 2. Change some methods to be priavte
- * 3. Banner lisence
- * 4. Publish to NPM
+ * 2. Publish to NPM
  */
 
 class DragScroll extends EventEmitter {

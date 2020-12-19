@@ -1,4 +1,7 @@
 const path = require('path')
+const webpack = require('webpack')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const banner = require('./banner.config')
 
 module.exports = {
     entry: {
@@ -15,6 +18,7 @@ module.exports = {
         libraryExport: 'default',
         umdNamedDefine: true,
     },
+    plugins: [new CleanWebpackPlugin(), new webpack.BannerPlugin(banner)],
     module: {
         rules: [
             {

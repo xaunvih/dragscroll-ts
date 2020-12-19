@@ -1,7 +1,6 @@
 const path = require('path')
 const merge = require('webpack-merge')
 const webpackCommon = require('./webpack.common')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const files = ['index', 'vertical', 'all']
@@ -16,7 +15,6 @@ module.exports = merge(webpackCommon, {
         dragscroll: path.resolve(__dirname, 'src/index.ts'),
     },
     plugins: [
-        new CleanWebpackPlugin(),
         ...files.map((file) => {
             return new HtmlWebpackPlugin({
                 filename: `${file}.html`,
@@ -64,7 +62,7 @@ module.exports = merge(webpackCommon, {
         contentBase: [path.resolve('build'), path.resolve('public')],
         open: true,
         compress: true,
-        writeToDisk: false,
+        writeToDisk: true,
         watchOptions: {
             poll: true,
         },
