@@ -1,5 +1,3 @@
-export { Emitter, Handler, EventType } from 'mitt'
-
 export interface IDragScrollOptions {
     $container: HTMLElement
     $content: HTMLElement
