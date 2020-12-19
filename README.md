@@ -2,7 +2,7 @@
 
 Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
-## Usage 
+## Usage
 
 ### First of all, you need to import this library:
 
@@ -70,6 +70,22 @@ new DragScroll({
 | setInputCanBeFocused | Default is true. Input fields can be focused                 |
 | setTextCanBeSelected | Default is true. Text content can be selected                |
 | destroy              | Remove all listeners                                         |
+
+## Events
+
+-   There are 3 events of DragScroll. The evt parameter is either MouseEvent or TouchEvent
+-   Events: "dragstart", "dragging" and "dragend"
+
+```js
+// Example:
+
+const dragSroll = new DragScroll({})
+
+function handler(evt) {}
+
+dragSroll.on('dragstart', handler)
+dragSroll.off('dragstart', handler)
+```
 
 ## Files size
 
