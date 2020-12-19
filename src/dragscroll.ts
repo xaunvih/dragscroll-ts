@@ -1,6 +1,6 @@
 import './polyfill'
 import { IDragScrollOptions, IDragScrollState, ICoordinate } from './@types'
-import EventEmiter from './emitter'
+import EventEmitter from './emitter'
 import { hasTextSelectFromPoint } from './utils'
 
 /**
@@ -14,7 +14,7 @@ import { hasTextSelectFromPoint } from './utils'
  * 4. Banner lisence
  */
 
-class DragScroll extends EventEmiter {
+class DragScroll extends EventEmitter {
     $container: HTMLElement
     $content: HTMLElement
     rafID: number

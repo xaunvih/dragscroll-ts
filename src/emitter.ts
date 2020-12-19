@@ -1,6 +1,6 @@
 import mitt, { Emitter, Handler, EventType } from 'mitt'
 
-class EventEmiter {
+class EventEmitter {
     emitter: Emitter
 
     constructor() {
@@ -20,4 +20,4 @@ class EventEmiter {
     }
 }
 
-export default EventEmiter
+export default EventEmitter
