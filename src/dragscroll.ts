@@ -201,7 +201,7 @@ class DragScroll extends EventEmiter {
         evt.stopPropagation()
 
         // trigger drag start event
-        this.trigger('dragStart', evt)
+        this.trigger('dragstart', evt)
 
         this.state.isDragging = true
         this.state.startPosition = {
@@ -229,7 +229,7 @@ class DragScroll extends EventEmiter {
     onDragEnd(evt: MouseEvent): void {
         if (this.state.isDragging) {
             // trigger drag end event
-            this.trigger('dragEnd', evt)
+            this.trigger('dragend', evt)
         }
 
         this.state.isDragging = false
