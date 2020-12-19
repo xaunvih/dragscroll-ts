@@ -5,7 +5,8 @@ export interface IDragScrollOptions {
     $content: HTMLElement
     axis: string
     friction?: number
-    allowInputFocus?: false
+    allowInputFocus?: boolean
+    allowSelectText?: boolean
 }
 
 export interface ICoordinate {

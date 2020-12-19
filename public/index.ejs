@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Horizontal scroll | DragScroll</title>
-    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
@@ -16,7 +15,9 @@
             <li><a href="./all.html">Horizontal & Vertical</a></li>
         </ul>
 
-        <h2>Drag to scroll horizontally</h2>
+        <h2>Drag to scroll horizontally - In case items have the link</h2>
+        <p>You can flick the content to feel</p>
+
         <div class="drag-scroll drag-scroll-horizontal">
             <ul>
                 <% for (var i =1; i <= 3;  i++ ) { %>
@@ -53,6 +54,26 @@
                 <% } %>
             </ul>
         </div>
+
+        <h2>Drag to scroll horizontally - In case items have input field</h2>
+
+        <div class="drag-scroll drag-scroll-horizontal">
+            <ul>
+                <% for (var i =1; i <= 10;  i++ ) { %>
+                <li class="item">
+                    <textarea placeholder="Type something..."></textarea>
+                </li>
+                <li class="item">
+                    <label>
+                        <p>click me to focus input below</p>
+                        <input type="text" placeholder="Type something..." />
+                    </label>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+
+
     </main>
 
     <script>
@@ -64,6 +85,18 @@
                     $container: $container,
                     $content: $content
                 });
+
+                dragSroll.on('dragStart', function (evt) {
+                    console.log('dragStart', evt)
+                })
+
+                dragSroll.on('dragging', function (evt) {
+                    console.log('dragging', evt)
+                })
+
+                dragSroll.on('dragEnd', function (evt) {
+                    console.log('dragEnd', evt)
+                })
             })
         })
     </script>

@@ -1,40 +1,25 @@
 import './polyfill'
 import { IDragScrollOptions, IDragScrollState, ICoordinate } from './@types'
 import EventEmiter from './emitter'
+import { hasTextSelectFromPoint } from './utils'
+
+/**
+ * Todo:
+ * 1. Add touch events
+ * 2. Define scrollTo & scrollToCenter func
+ * 3. Update Readme.md
+ * - Example of using Js, CommonJs, Ejs, Ts
+ * - API: scrollTo, scrollToCenter, setInputCanBeFocused
+ * - Options
+ * 4. Banner lisence
+ */
 
 class DragScroll extends EventEmiter {
     $container: HTMLElement
     $content: HTMLElement
     rafID: number
     options: IDragScrollOptions
-    state: IDragScrollState = {
-        startPosition: {
-            x: 0,
-            y: 0,
-        },
-        previousPosition: {
-            x: 0,
-            y: 0,
-        },
-        position: {
-            x: 0,
-            y: 0,
-        },
-        dragPosition: {
-            x: 0,
-            y: 0,
-        },
-        velocity: {
-            x: 0,
-            y: 0,
-        },
-        dragOffset: {
-            x: 0,
-            y: 0,
-        },
-        isRunning: false,
-        isDragging: false,
-    }
+    state: IDragScrollState
 
     constructor(options: IDragScrollOptions) {
         super()
@@ -42,10 +27,27 @@ class DragScroll extends EventEmiter {
             {
                 friction: 0.95,
                 axis: 'x',
-                allowInputFocus: false,
+                allowInputFocus: true,
+                allowSelectText: true,
             },
             options,
         )
+
+        const initialCoordinate = {
+            x: 0,
+            y: 0,
+        }
+
+        this.state = {
+            startPosition: { ...initialCoordinate },
+            previousPosition: { ...initialCoordinate },
+            position: { ...initialCoordinate },
+            dragPosition: { ...initialCoordinate },
+            velocity: { ...initialCoordinate },
+            dragOffset: { ...initialCoordinate },
+            isRunning: false,
+            isDragging: false,
+        }
 
         this.$container = this.options.$container
         this.$content = this.options.$content
@@ -60,10 +62,29 @@ class DragScroll extends EventEmiter {
     }
 
     bindEvents(): void {
+        // Mouse events
         this.$content.addEventListener('click', this.onClick)
         this.$content.addEventListener('mousedown', this.onDragStart)
         window.addEventListener('mousemove', this.onDraging)
         window.addEventListener('mouseup', this.onDragEnd)
+
+        // Touch events
+        // this.$content.addEventListener('touchstart', this.onDragStart)
+        // window.addEventListener('touchmove', this.onDraging)
+        // window.addEventListener('touchend', this.onDragEnd)
+    }
+
+    unbindEvents(): void {
+        // Mouse events
+        this.$content.removeEventListener('click', this.onClick)
+        this.$content.removeEventListener('mousedown', this.onDragStart)
+        window.removeEventListener('mousemove', this.onDraging)
+        window.removeEventListener('mouseup', this.onDragEnd)
+
+        // Touch events
+        // this.$content.removeEventListener('touchstart', this.onDragStart)
+        // window.removeEventListener('touchmove', this.onDraging)
+        // window.removeEventListener('touchend', this.onDragEnd)
     }
 
     update(): void {
@@ -165,14 +186,22 @@ class DragScroll extends EventEmiter {
     }
 
     onDragStart(evt: MouseEvent): void {
-        evt.preventDefault()
-        evt.stopPropagation()
+        // const isTouchEvent = event instanceof TouchEvent
+        // const evt = isTouchEvent ? (<TouchEvent>event).touches[0] : event
 
         // allow inputs can be focused by clicking
         const formNodes = ['input', 'textarea', 'button', 'select', 'label']
         if (this.options.allowInputFocus && formNodes.indexOf((<HTMLElement>evt.target).nodeName.toLowerCase()) > -1) {
             return
         }
+
+        // case select text content
+        if (this.options.allowSelectText && hasTextSelectFromPoint(evt)) return
+        evt.preventDefault()
+        evt.stopPropagation()
+
+        // trigger drag start event
+        this.trigger('dragStart', evt)
 
         this.state.isDragging = true
         this.state.startPosition = {
@@ -192,9 +221,17 @@ class DragScroll extends EventEmiter {
     onDraging(evt: MouseEvent): void {
         if (!this.state.isDragging) return
         this.setDragPosition(evt)
+
+        // trigger dragging event
+        this.trigger('dragging', evt)
     }
 
-    onDragEnd(): void {
+    onDragEnd(evt: MouseEvent): void {
+        if (this.state.isDragging) {
+            // trigger drag end event
+            this.trigger('dragEnd', evt)
+        }
+
         this.state.isDragging = false
     }
 
@@ -207,9 +244,35 @@ class DragScroll extends EventEmiter {
         dragPosition.y = previousPosition.y + dragOffset.y
     }
 
+    setInputCanBeFocused(focused: boolean = false): void {
+        this.options.allowInputFocus = focused
+    }
+
     adaptContentPosition(): void {
         const { position } = this.state
         this.$content.style.transform = `translate(${position.x}px,${position.y}px)`
+    }
+
+    hasTextSelectFromPoint(evt: MouseEvent): boolean {
+        const $ele = <HTMLInputElement>evt.target
+        const nodes = $ele.childNodes
+        const range = document.createRange()
+        const { clientX, clientY } = evt
+
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i]
+            if (node.nodeType !== 3) {
+                continue
+            }
+
+            range.selectNodeContents(node)
+            const rect = range.getBoundingClientRect()
+            if (clientX >= rect.left && clientY >= rect.top && clientX <= rect.right && clientY <= rect.bottom) {
+                return true
+            }
+        }
+
+        return false
     }
 
     isMoving(): boolean {

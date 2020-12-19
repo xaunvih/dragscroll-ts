@@ -15,8 +15,8 @@ class EventEmiter {
         this.emitter.off(eventName, handler)
     }
 
-    trigger(eventName: EventType, handler: Handler): void {
-        this.emitter.emit(eventName, handler)
+    trigger(eventName: EventType, data: any): void {
+        this.emitter.emit(eventName, data)
     }
 }
 
