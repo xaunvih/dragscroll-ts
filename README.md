@@ -100,11 +100,11 @@ dragSroll.off('dragstart', handler)
 
 ## Files size
 
-| File              | size     |
-| ----------------- | -------- |
-| dragscroll.min.js | 7.53 KB  |
-| dragscroll.cjs.js | 13.23 KB |
-| dragscroll.es.js  | 13.22 KB |
+| File              | Format         | size     |
+| ----------------- | -------------- |----------
+| dragscroll.min.js | UMD            | 7.53 KB  |
+| dragscroll.cjs.js | Common Js      | 13.23 KB |
+| dragscroll.es.js  | ES Module.     | 13.22 KB |
 
 ### License
 
