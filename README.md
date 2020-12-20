@@ -39,7 +39,7 @@ import DragScroll from '@springjs/dragscroll/src/index.ts'
 ### Next step, init drag scroll instance
 
 ```js
-// You need to specified the WIDTH & HEGIHT of $content element. See picture below
+// You need to be specified the WIDTH & HEGIHT of $content element. See picture below
 
 const $container = document.getElementById('demo-wrapper')
 const $content = document.getElementById('demo-content')
@@ -104,7 +104,7 @@ dragSroll.off('dragstart', handler)
 | ----------------- | -------------- |----------
 | dragscroll.min.js | UMD            | 7.53 KB  |
 | dragscroll.cjs.js | Common Js      | 13.23 KB |
-| dragscroll.es.js  | ES Module.     | 13.22 KB |
+| dragscroll.es.js  | ES Module      | 13.22 KB |
 
 ### License
 
