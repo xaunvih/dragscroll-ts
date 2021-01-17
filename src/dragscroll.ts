@@ -9,12 +9,13 @@ class DragScroll extends EventEmitter {
     rafID: number
     options: IDragScrollOptions
     state: IDragScrollState
+    friction: number
+    frictionTarget: number
 
     constructor(options: IDragScrollOptions) {
         super()
         this.options = Object.assign(
             {
-                friction: 0.95,
                 axis: 'x',
                 allowInputFocus: true,
                 allowSelectText: true,
@@ -40,6 +41,8 @@ class DragScroll extends EventEmitter {
             isScrollToRunning: false,
         }
 
+        this.friction = 0.95
+        this.frictionTarget = 0.08
         this.$container = this.options.$container
         this.$content = this.options.$content
 
@@ -80,7 +83,10 @@ class DragScroll extends EventEmitter {
 
     update(): void {
         const { isDragging, isScrollToRunning } = this.state
-        this.applyDragForce()
+
+        if (isDragging) {
+            this.applyDragForce()
+        }
 
         if (!isDragging) {
             this.applyAllBoundForce()
@@ -91,9 +97,9 @@ class DragScroll extends EventEmitter {
         }
 
         const { position, velocity } = this.state
-        const { friction, axis } = this.options
-        velocity.x *= friction
-        velocity.y *= friction
+        const { axis } = this.options
+        velocity.x *= this.friction
+        velocity.y *= this.friction
 
         if (axis !== 'y') {
             position.x += velocity.x
@@ -113,14 +119,12 @@ class DragScroll extends EventEmitter {
     applyTargetForce(): void {
         const { position, velocity, targetPosition } = this.state
         this.applyForce({
-            x: (targetPosition.x - position.x) * 0.08 - velocity.x,
-            y: (targetPosition.y - position.y) * 0.08 - velocity.y,
+            x: (targetPosition.x - position.x) * this.frictionTarget - velocity.x,
+            y: (targetPosition.y - position.y) * this.frictionTarget - velocity.y,
         })
     }
 
     applyDragForce(): void {
-        if (!this.state.isDragging) return
-
         // change the position to drag position by applying force to velocity
         const { position, dragPosition, velocity } = this.state
         const dragForce = {
@@ -133,7 +137,7 @@ class DragScroll extends EventEmitter {
 
     applyAllBoundForce(): void {
         // left right top bottom bounds
-        ;[
+        const edges = [
             {
                 bound: this.$container.clientWidth - this.$content.clientWidth,
                 axis: 'x',
@@ -152,11 +156,12 @@ class DragScroll extends EventEmitter {
                 isForward: true,
                 axis: 'y',
             },
-        ].forEach((edge) => this.applyBoundForce(edge))
+        ]
+
+        edges.forEach((edge) => this.applyBoundForce(edge))
     }
 
     applyBoundForce({ bound, isForward = false, axis }: { bound: number; isForward?: boolean; axis: string }): void {
-        const { friction } = this.options
         const { velocity: currentVelocity, position: currentPosition } = this.state
         const position = currentPosition[axis]
         const velocity = currentVelocity[axis]
@@ -165,14 +170,12 @@ class DragScroll extends EventEmitter {
             return
         }
 
-        // bouncing past bound
         const distance = bound - position
-        let force = distance * 0.1
-        const restPosition = position + ((velocity + force) * friction) / (1 - friction)
+        let force = distance * this.frictionTarget
+        const restPosition = position + ((velocity + force) * this.friction) / (1 - this.friction)
         const isRestOutside = isForward ? restPosition > bound : restPosition < bound
         if (!isRestOutside) {
-            // bounce back
-            force = distance * 0.1 - velocity
+            force = distance * this.frictionTarget - velocity
         }
 
         this.applyForce({ x: 0, y: 0, [axis]: force })

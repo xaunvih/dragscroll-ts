@@ -1,8 +1,8 @@
 {
-    "name": "@springjs/dragscroll",
+    "name": "dragscroll-ts",
     "version": "1.0.0",
     "main": "build/dragscroll.cjs.js",
-    "mudule": "build/dragscroll.es.js",
+    "module": "build/dragscroll.es.js",
     "browser": "build/dragscroll.min.js",
     "types": "declaration/index.d.ts",
     "files": [
@@ -58,6 +58,7 @@
         "print-sizes": "^0.1.0",
         "rollup-plugin-commonjs": "^10.1.0",
         "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-terser": "^7.0.2",
         "rollup-plugin-typescript": "^1.0.1",
         "sass": "^1.26.9",
         "sass-loader": "^8.0.2",
