@@ -1,10 +1,14 @@
 {
     "name": "@springjs/dragscroll",
     "version": "1.0.0",
-    "main": "./build/dragscroll.cjs.js",
-    "mudule": "./build/dragscroll.es.js",
-    "browser": "./build/dragscroll.min.js",
+    "main": "build/dragscroll.cjs.js",
+    "mudule": "build/dragscroll.es.js",
+    "browser": "build/dragscroll.min.js",
     "types": "declaration/index.d.ts",
+    "files": [
+        "build",
+        "declaration"
+    ],
     "scripts": {
         "start": "webpack-dev-server --config webpack.dev.js",
         "clean": "rm -rf build && rm -rf declaration && rm -rf docs",
