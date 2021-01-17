@@ -2,6 +2,8 @@
 
 Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
+![Alt text](https://vinhmx.me/drag/dragscrolldemo-v2.gif?raw=true)
+
 ## Usage
 
 ### First of all, you need to import this library:
@@ -37,7 +39,7 @@ import DragScroll from '@springjs/dragscroll/src/index.ts'
 ### Next step, init drag scroll instance
 
 ```js
-// You need to specified the WIDTH & HEGIHT of $content element. See picture below
+// You need to be specified the WIDTH & HEGIHT of $content element. See picture below
 
 const $container = document.getElementById('demo-wrapper')
 const $content = document.getElementById('demo-content')
@@ -50,8 +52,7 @@ new DragScroll({
     allowSelectText: false,
 })
 ```
-
-![Alt text](illustration.png?raw=true)
+![Alt text](https://vinhmx.me/drag/illustration.png?raw=true)
 
 ## Config options
 
@@ -77,8 +78,13 @@ new DragScroll({
 
 ## Events
 
--   There are 3 events of DragScroll. The evt parameter is either MouseEvent or TouchEvent
--   Events: "dragstart", "dragging" and "dragend"
+The evt parameter is either MouseEvent or TouchEvent
+
+| Name                 | Description                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| dragstart            | To be fired when starting drag                               |
+| dragging             | To be fired when dragging                                    |
+| dragend              | To be fired when dragging is end                             |
 
 ```js
 // Example:
@@ -93,11 +99,11 @@ dragSroll.off('dragstart', handler)
 
 ## Files size
 
-| File              | size     |
-| ----------------- | -------- |
-| dragscroll.min.js | 7.53 KB  |
-| dragscroll.cjs.js | 13.23 KB |
-| dragscroll.es.js  | 13.22 KB |
+| File              | Format         | size     |
+| ----------------- | -------------- |----------
+| dragscroll.min.js | UMD            | 7.53 KB  |
+| dragscroll.cjs.js | Common Js      | 13.23 KB |
+| dragscroll.es.js  | ES Module      | 13.22 KB |
 
 ### License
 
