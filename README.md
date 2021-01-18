@@ -2,7 +2,7 @@
 
 Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish standard format Js such as commonJs, ES Modules, UMD, Typescript
 
-![Alt text](https://vinhmx.me/drag/dragscrolldemo-v2.gif?raw=true)
+![Alt text](https://vinhmx.me/dragscroll.gif?raw=true)
 
 ## Usage
 
@@ -51,7 +51,7 @@ new DragScroll({
 })
 ```
 
-![Alt text](https://vinhmx.me/drag/illustration.png?raw=true)
+![Alt text](https://vinhmx.me/illustration.png?raw=true)
 
 ## Config options
 
