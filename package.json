@@ -1,13 +1,14 @@
 {
     "name": "dragscroll-ts",
     "version": "1.0.0",
+    "description": "Drag Scroll library - smooth content scroll via mouse/touch dragging",
     "main": "build/dragscroll.cjs.js",
     "module": "build/dragscroll.es.js",
     "browser": "build/dragscroll.min.js",
     "types": "declaration/index.d.ts",
     "files": [
-        "build",
-        "declaration"
+        "build/*",
+        "declaration/*"
     ],
     "scripts": {
         "start": "webpack-dev-server --config webpack.dev.js",
@@ -20,7 +21,8 @@
         "print-sizes": "print-sizes ./build"
     },
     "repository": {
-        "url": "git@github.com:xaunvih/dragscroll.git"
+        "type": "git",
+        "url": "git+https://github.com/xaunvih/dragscroll-ts"
     },
     "author": "vinhmai <vinhmai079@gmail.com>",
     "license": "MIT",
