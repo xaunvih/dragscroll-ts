@@ -10,7 +10,7 @@ Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish st
 
 ```js
 // Javascript tag
-<script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.0/build/dragscroll.min.js"></script>
+<script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.1/build/dragscroll.min.js"></script>
 ```
 
 ```js
@@ -37,7 +37,7 @@ interface IDragScrollOptions {
 ### Next step, init drag scroll instance
 
 ```diff
-- NOTE: This library only wrap dragscroll logic to available HTML, It doesn't touch to stylesheet 😉
+- NOTE: This library only wrap dragscroll logic on available HTML, It doesn't touch to stylesheet 😉
 - Need to be specified the HTML structure of $container, $content elements. See picture below
 ```
 
@@ -86,12 +86,13 @@ The evt parameter is either MouseEvent or TouchEvent
 | --------- | -------------------------------- |
 | dragstart | To be fired when starting drag   |
 | dragging  | To be fired when dragging        |
-| dragend   | To be fired when dragging is end |
+| dragend   | To be fired when dragging content meet end point |
 
 ```js
 // Example:
 const dragSroll = new DragScroll({})
 function handler(evt) {}
+
 dragSroll.on('dragstart', handler)
 dragSroll.off('dragstart', handler)
 ```
@@ -103,6 +104,10 @@ dragSroll.off('dragstart', handler)
 | dragscroll.min.js | UMD       | 7.6 KB  |
 | dragscroll.cjs.js | Common Js | 6.96 KB |
 | dragscroll.es.js  | ES Module | 6.95 KB |
+
+## Other
+
+React: https://github.com/xaunvih/react-dragscroll-ts
 
 ### License
 
