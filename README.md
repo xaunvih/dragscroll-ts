@@ -37,8 +37,8 @@ interface IDragScrollOptions {
 ### Next step, init drag scroll instance
 
 ```diff
-@@ NOTE: This library only wrap your HTML, It doesn't touch to stylesheet
-@@ You need to be specified the HTML structure of $container, $content elements. See picture below
++ NOTE: This library only wrap your HTML, It doesn't touch to stylesheet
++ You need to be specified the HTML structure of $container, $content elements. See picture below
 ```
 
 ```js
