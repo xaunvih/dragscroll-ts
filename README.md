@@ -36,9 +36,12 @@ interface IDragScrollOptions {
 
 ### Next step, init drag scroll instance
 
-```js
-// You need to be specified the WIDTH & HEGIHT of $content element. See picture below
+```diff
+@@ NOTE: This library only wrap your HTML, It doesn't touch to stylesheet
+@@ You need to be specified the HTML structure of $container, $content elements. See picture below
+```
 
+```js
 const $container = document.getElementById('demo-wrapper')
 const $content = document.getElementById('demo-content')
 
