@@ -1,6 +1,6 @@
 {
     "name": "dragscroll-ts",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Drag Scroll library - smooth content scroll via mouse/touch dragging",
     "main": "build/dragscroll.cjs.js",
     "module": "build/dragscroll.es.js",
