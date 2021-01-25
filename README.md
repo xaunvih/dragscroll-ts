@@ -10,7 +10,7 @@ Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish st
 
 ```js
 // Javascript tag
-<script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.1/build/dragscroll.min.js"></script>
+<script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.2/build/dragscroll.min.js"></script>
 ```
 
 ```js
