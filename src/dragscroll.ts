@@ -11,6 +11,7 @@ class DragScroll extends EventEmitter {
     state: IDragScrollState
     friction: number
     frictionTarget: number
+    bounceForce: number
 
     constructor(options: IDragScrollOptions) {
         super()
@@ -43,6 +44,7 @@ class DragScroll extends EventEmitter {
 
         this.friction = 0.95
         this.frictionTarget = 0.08
+        this.bounceForce = 0.1
         this.$container = this.options.$container
         this.$content = this.options.$content
 
@@ -63,8 +65,8 @@ class DragScroll extends EventEmitter {
         window.addEventListener('mouseup', this.onDragEnd)
 
         // Touch events
-        this.$content.addEventListener('touchstart', this.onDragStart)
-        window.addEventListener('touchmove', this.onDraging)
+        this.$content.addEventListener('touchstart', this.onDragStart, { passive: false })
+        window.addEventListener('touchmove', this.onDraging, { passive: false })
         window.addEventListener('touchend', this.onDragEnd)
     }
 
@@ -171,11 +173,11 @@ class DragScroll extends EventEmitter {
         }
 
         const distance = bound - position
-        let force = distance * this.frictionTarget
+        let force = distance * this.bounceForce
         const restPosition = position + ((velocity + force) * this.friction) / (1 - this.friction)
         const isRestOutside = isForward ? restPosition > bound : restPosition < bound
         if (!isRestOutside) {
-            force = distance * this.frictionTarget - velocity
+            force = distance * this.bounceForce - velocity
         }
 
         this.applyForce({ x: 0, y: 0, [axis]: force })
@@ -207,8 +209,10 @@ class DragScroll extends EventEmitter {
         // case select text content
         if (this.options.allowSelectText && hasTextSelectFromPoint($ele, clientX, clientY)) return
 
-        evt.preventDefault()
-        evt.stopPropagation()
+        if (!isTouchEvent) {
+            evt.preventDefault()
+            evt.stopPropagation()
+        }
 
         // trigger drag start event
         this.trigger('dragstart', evt)
@@ -262,6 +266,10 @@ class DragScroll extends EventEmitter {
 
     setInputCanBeFocused(focused: boolean = false): void {
         this.options.allowInputFocus = focused
+    }
+
+    setTextCanBeSelected(focused: boolean = false): void {
+        this.options.allowSelectText = focused
     }
 
     scrollTo(targetPosition: ICoordinate): void {
