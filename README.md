@@ -24,7 +24,11 @@ import DragScroll from 'dragscroll-ts'
 ```
 
 ```js
-// Typescript options
+// Typescript
+import DragScroll, { IDragScrollOptions } from 'dragscroll-ts'
+
+const options: IDragScrollOptions = {}
+
 interface IDragScrollOptions {
     $container: HTMLElement
     $content: HTMLElement
