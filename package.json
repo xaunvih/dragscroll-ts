@@ -32,11 +32,12 @@
         "scroll",
         "moveable",
         "draggable",
-        "rotatable",
         "movable",
-        "dom",
         "drag",
-        "move"
+        "move",
+        "horizontal",
+        "vertical",
+        "scroll-library"
     ],
     "dependencies": {
         "mitt": "^2.1.0"
