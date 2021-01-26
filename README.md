@@ -4,6 +4,10 @@ Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish st
 
 ![Alt text](https://vinhmx.me/dragscroll.gif?raw=true)
 
+## Why DragScroll ?
+
+- More comfortable with physical UI, make consistency between different devices 
+
 ## Usage
 
 ### First of all, you need to import this library:
