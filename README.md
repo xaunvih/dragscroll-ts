@@ -113,10 +113,6 @@ dragSroll.off('dragstart', handler)
 | dragscroll.cjs.js | Common Js | 6.96 KB |
 | dragscroll.es.js  | ES Module | 6.95 KB |
 
-## Other
-
-React: https://github.com/xaunvih/react-dragscroll-ts
-
 ### License
 
 MIT License (c) 2020 XuanVinh
