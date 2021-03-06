@@ -24,6 +24,13 @@ export interface IDragScrollState {
     isScrollToRunning: boolean
 }
 
+export interface IMetaData {
+    containerWidth: number
+    containerHeight: number
+    contentWidth: number
+    contentHeight: number
+}
+
 export interface IObject {
     [key: string]: number | string
 }

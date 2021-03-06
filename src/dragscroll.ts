@@ -1,5 +1,5 @@
 import './polyfill'
-import { IDragScrollOptions, IDragScrollState, ICoordinate } from './@types'
+import { IDragScrollOptions, IDragScrollState, ICoordinate, IMetaData } from './@types'
 import EventEmitter from './emitter'
 import { hasTextSelectFromPoint } from './utils'
 
@@ -12,6 +12,8 @@ class DragScroll extends EventEmitter {
     friction: number
     frictionTarget: number
     bounceForce: number
+    observer: MutationObserver
+    metaData: IMetaData
 
     constructor(options: IDragScrollOptions) {
         super()
@@ -52,9 +54,11 @@ class DragScroll extends EventEmitter {
         this.onDraging = this.onDraging.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
         this.onClick = this.onClick.bind(this)
+        this.onResize = this.onResize.bind(this)
         this.animate = this.animate.bind(this)
 
         this.bindEvents()
+        this.updateMeta()
     }
 
     bindEvents(): void {
@@ -68,6 +72,41 @@ class DragScroll extends EventEmitter {
         this.$content.addEventListener('touchstart', this.onDragStart, { passive: false })
         window.addEventListener('touchmove', this.onDraging, { passive: false })
         window.addEventListener('touchend', this.onDragEnd)
+
+        // Global
+        window.addEventListener('resize', this.onResize)
+        this.onChildrenChange()
+    }
+
+    updateMeta(): void {
+        this.metaData = {
+            containerWidth: this.$container.clientWidth,
+            containerHeight: this.$container.clientHeight,
+            contentWidth: this.$content.clientWidth,
+            contentHeight: this.$content.clientHeight,
+        }
+    }
+
+    onResize(evt: UIEvent): void {
+        this.updateMeta()
+        // trigger resize event
+        this.trigger('resize', evt)
+    }
+
+    onChildrenChange(): void {
+        const config = { attributes: false, childList: true, subtree: true }
+        this.observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    this.updateMeta()
+
+                    // trigger dragging event
+                    this.trigger('childrenChange', mutation)
+                }
+            }
+        })
+
+        this.observer.observe(this.$container, config)
     }
 
     destroy(): void {
@@ -81,6 +120,10 @@ class DragScroll extends EventEmitter {
         this.$content.removeEventListener('touchstart', this.onDragStart)
         window.removeEventListener('touchmove', this.onDraging)
         window.removeEventListener('touchend', this.onDragEnd)
+
+        // Global
+        window.removeEventListener('resize', this.onResize)
+        this.observer.disconnect()
     }
 
     update(): void {
@@ -139,9 +182,10 @@ class DragScroll extends EventEmitter {
 
     applyAllBoundForce(): void {
         // left right top bottom bounds
+        const { containerWidth, containerHeight, contentWidth, contentHeight } = this.metaData
         const edges = [
             {
-                bound: this.$container.clientWidth - this.$content.clientWidth,
+                bound: containerWidth - contentWidth,
                 axis: 'x',
             },
             {
@@ -150,7 +194,7 @@ class DragScroll extends EventEmitter {
                 axis: 'x',
             },
             {
-                bound: this.$container.clientHeight - this.$content.clientHeight,
+                bound: containerHeight - contentHeight,
                 axis: 'y',
             },
             {
@@ -203,7 +247,7 @@ class DragScroll extends EventEmitter {
             return
         }
 
-        const isTouchEvent = evt instanceof TouchEvent
+        const isTouchEvent = Boolean((<TouchEvent>evt).targetTouches)
         const { clientX, clientY } = isTouchEvent ? (<TouchEvent>evt).targetTouches[0] : <MouseEvent>evt
 
         // case select text content
@@ -235,7 +279,7 @@ class DragScroll extends EventEmitter {
     onDraging(evt: MouseEvent | TouchEvent): void {
         if (!this.state.isDragging) return
 
-        const isTouchEvent = evt instanceof TouchEvent
+        const isTouchEvent = Boolean((<TouchEvent>evt).targetTouches)
         const { clientX, clientY } = isTouchEvent ? (<TouchEvent>evt).targetTouches[0] : <MouseEvent>evt
 
         this.setDragPosition({
