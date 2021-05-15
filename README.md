@@ -4,7 +4,7 @@ Drag Scroll library - smooth content scroll via mouse/touch dragging. Publish st
 
 Give this library the ⭐️ if it's useful 😉
 
-![Alt text](https://vinhmx.me/dragscroll.gif?raw=true)
+![Alt text](dragscroll.gif?raw=true)
 
 ## Why DragScroll ?
 
@@ -64,7 +64,7 @@ new DragScroll({
 })
 ```
 
-![Alt text](https://vinhmx.me/illustration.png?raw=true)
+![Alt text](illustration.png?raw=true)
 
 ## Config options
 
