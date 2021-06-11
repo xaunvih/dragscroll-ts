@@ -16,7 +16,13 @@ Give this library the ⭐️ if it's useful 😉
 
 ```js
 // Javascript tag
-<script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.2/build/dragscroll.min.js"></script>
+<script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.4/build/dragscroll.min.js"></script>
+```
+
+```js
+// Npm or Yarn
+npm i dragscroll-ts
+yarn add dragscroll-ts
 ```
 
 ```js
@@ -32,7 +38,6 @@ import DragScroll from 'dragscroll-ts'
 ```js
 // Typescript
 import DragScroll, { IDragScrollOptions } from 'dragscroll-ts'
-
 const options: IDragScrollOptions = {}
 
 interface IDragScrollOptions {
@@ -47,8 +52,8 @@ interface IDragScrollOptions {
 ### Next step, init drag scroll instance
 
 ```diff
-- NOTE: This library only wrap dragscroll logic on available HTML, It doesn't touch to stylesheet 😉
-- Need to be specified the HTML structure of $container, $content elements. See picture below
+- NOTE: This library only wrap dragscroll logic on available HTML, It doesn't touch stylesheet 😉
+- Need to be specific the HTML structure of $container, $content elements. See picture below
 ```
 
 ```js
