@@ -19,9 +19,10 @@ Give this library the ⭐️ if it's useful 😉
 <script type="type/javascript" src="https://unpkg.com/dragscroll-ts@1.0.4/build/dragscroll.min.js"></script>
 ```
 
-```js
-// Npm or Yarn
-npm i dragscroll-ts
+```sh
+# npm or yarn
+
+npm i --save dragscroll-ts
 yarn add dragscroll-ts
 ```
 
@@ -35,7 +36,7 @@ const DragScroll = require('dragscroll-ts')
 import DragScroll from 'dragscroll-ts'
 ```
 
-```js
+```ts
 // Typescript
 import DragScroll, { IDragScrollOptions } from 'dragscroll-ts'
 const options: IDragScrollOptions = {}
