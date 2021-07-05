@@ -9,17 +9,6 @@ module.exports = merge(webpackCommon, {
         filename: '[name].min.js',
     },
     optimization: {
-        minimizer: [
-            new TerserPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: true,
-                terserOptions: {
-                    compress: {
-                        drop_console: true,
-                    },
-                },
-            }),
-        ],
+        minimizer: [new TerserPlugin()],
     },
 })
