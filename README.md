@@ -8,7 +8,7 @@ Give this library the ⭐️ if it's useful 😉
 
 ## Why DragScroll ?
 
-- More comfortable with physical UI, make consistency between different devices 
+- More comfortable with physical UI, make consistency between different devices
 
 ## Usage
 
@@ -42,11 +42,11 @@ import DragScroll, { IDragScrollOptions } from 'dragscroll-ts'
 const options: IDragScrollOptions = {}
 
 interface IDragScrollOptions {
-    $container: HTMLElement
-    $content: HTMLElement
-    axis: string
-    allowInputFocus?: boolean
-    allowSelectText?: boolean
+  $container: HTMLElement
+  $content: HTMLElement
+  axis: string
+  allowInputFocus?: boolean
+  allowSelectText?: boolean
 }
 ```
 
@@ -62,11 +62,11 @@ const $container = document.getElementById('demo-wrapper')
 const $content = document.getElementById('demo-content')
 
 new DragScroll({
-    $container: $container,
-    $content: $content,
-    axix: 'x',
-    allowInputFocus: true,
-    allowSelectText: false,
+  $container: $container,
+  $content: $content,
+  axix: 'x',
+  allowInputFocus: true,
+  allowSelectText: false,
 })
 ```
 
@@ -98,10 +98,10 @@ new DragScroll({
 
 The evt parameter is either MouseEvent or TouchEvent
 
-| Name      | Description                      |
-| --------- | -------------------------------- |
-| dragstart | To be fired when starting drag   |
-| dragging  | To be fired when dragging        |
+| Name      | Description                                      |
+| --------- | ------------------------------------------------ |
+| dragstart | To be fired when starting drag                   |
+| dragging  | To be fired when dragging                        |
 | dragend   | To be fired when dragging content meet end point |
 
 ```js
@@ -115,8 +115,8 @@ dragSroll.off('dragstart', handler)
 
 ## Files size
 
-| File              | Format    | size     |
-| ----------------- | --------- | -------- |
+| File              | Format    | size    |
+| ----------------- | --------- | ------- |
 | dragscroll.min.js | UMD       | 7.6 KB  |
 | dragscroll.cjs.js | Common Js | 6.96 KB |
 | dragscroll.es.js  | ES Module | 6.95 KB |
